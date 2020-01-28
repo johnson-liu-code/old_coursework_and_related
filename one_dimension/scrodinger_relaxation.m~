@@ -1,0 +1,57 @@
+
+global m h_bar
+
+
+m = 1;
+h_bar = 1;
+
+
+a = 1;
+
+n=1;
+E = (n^2 * pi^2 * h_bar^2) / (2 * m * a^2);
+V = 0;
+
+c = -((2 * m) / h_bar^2) * (E - V);
+
+h = 1E-2;
+
+length = a / h;
+
+x = zeros(length, 1);
+
+psi = ones(length, 1);
+
+
+for i = 1:length
+    x(i) = i;
+    if mod(i, 2) == 0
+        psi(i) = 1;
+    else
+        psi(i) = 2;
+    end
+end
+
+psi(1) = 0;
+psi(length) = 0;
+
+% psi
+
+
+matrix = zeros(length, length);
+
+for i = 2:(length-1)
+    matrix(i, i-1) = 1;
+    matrix(i, i) = -2;
+    matrix(i, i+1) = 1;
+end
+
+hold on
+
+for i = 1:10
+    psi = (1/c) * h^2 * matrix * psi
+    plot(x, psi, 'b+')
+    drawnow
+end
+
+plot(x, psi, 'b')

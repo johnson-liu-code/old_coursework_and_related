@@ -1,0 +1,9 @@
+Printing all callers on waiting list
+Ansering call from customer Person14
+Ansering call from customer Person05
+Ansering call from customer Person11
+Ansering call from customer Person08
+Ansering call from customer Person09
+Printing the next five callers on the waiting list
+Printing all callers on waiting list
+Quitting

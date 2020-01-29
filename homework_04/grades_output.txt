@@ -1,0 +1,52 @@
+Adding student 1030020 Emma_Hawkins
+Adding student 1040023 Kelly_Moreno
+Adding student 1045024 Lamar_Palmer
+Printing the list of students ...
+Student name: Lamar_Palmer
+HW1 grade: 0
+HW2 grade: 0
+Student name: Kelly_Moreno
+HW1 grade: 0
+HW2 grade: 0
+Student name: Emma_Hawkins
+HW1 grade: 0
+HW2 grade: 0
+Adding HW1 grade for student 1040023: 91
+Printing info on student 1040023
+Student name: Kelly_Moreno
+HW1 grade: 91
+HW2 grade: 0
+Mean score: 45
+Adding HW1 grade for student 1040023: 80
+Adding HW1 grade for student 1045024: 76
+Printing the list of students ...
+Student name: Lamar_Palmer
+HW1 grade: 76
+HW2 grade: 0
+Student name: Kelly_Moreno
+HW1 grade: 80
+HW2 grade: 0
+Student name: Emma_Hawkins
+HW1 grade: 0
+HW2 grade: 0
+Deleting student 1030020
+Printing the list of students ...
+Student name: Lamar_Palmer
+HW1 grade: 76
+HW2 grade: 0
+Student name: Kelly_Moreno
+HW1 grade: 80
+HW2 grade: 0
+Printing HW1 ...
+Student 1045024 has a HW1 grade of 76
+Student 1045024 has a HW1 grade of 76
+The average grade for HW1 is 78
+Printing HW2 ...
+Student 1045024 has a HW2 grade of 0
+Student 1040023 has a HW2 grade of 0
+The average grade for HW2 is 0
+Changing HW2 grade for student 1040023: 100
+Changing HW1 grade for student 1045024: 100
+Printing top student for HW2 ...
+The student with the highest score on HW2 is Kelly_Moreno with a score of 100
+QUIT

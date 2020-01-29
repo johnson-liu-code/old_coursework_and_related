@@ -1,0 +1,18 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+x = 10
+y = 10
+
+mat = np.zeros((x, y), dtype = complex)
+mat2 = np.zeros((x, y), dtype = complex)
+for xx in range(x):
+    for yy in range(y):
+        mat[xx][yy] = xx + 1j*yy
+
+#print mat
+
+plt.imshow(np.abs(mat))
+
+plt.show()

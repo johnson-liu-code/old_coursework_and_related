@@ -12,6 +12,10 @@ from determine_ij import determine_ij
 
 
 
+save_file_name = 'data/' + sys.argv[1] + '.pkl'
+
+
+
 def get_rand_coors(x_len, y_len, num_coors):
     # Generate a list of coordinates that does not repeat.
     coors_list = []
@@ -30,10 +34,11 @@ class patch:
         self.animal_list = []
 
 
-class animal:
+class animal_class:
     def __init__(self, animal_type, sex = None):
         self.type = animal_type
-        self.energy = 100
+        #self.energy = np.random.randint(10, 101)
+        self.energy = 20
         self.sex = sex
 
 
@@ -42,16 +47,19 @@ def prey_eat_nutrients(patch):
         for animal in patch.animal_list:
             if animal.type == 'prey':
                 if patch.nutrient_storage > 0:
-                    if patch.nutrient_storage > 10:
-                        animal.energy = animal.energy + 10
-                        patch.nutrient_storage = patch.nutrient_storage - 10
+                    #if patch.nutrient_storage > 10:
+                        energy_exchange = np.random.uniform(0, patch.nutrient_storage)
+
+                        animal.energy = animal.energy + energy_exchange
+                        patch.nutrient_storage = patch.nutrient_storage - energy_exchange
+
                         if patch.nutrient_storage == 0:
                             break
 
-                    else:
-                        animal.energy = animal.energy + patch.nutrient_storage
-                        patch.nutrient_storage = 0
-                        break
+                    #else:
+                    #    animal.energy = animal.energy + patch.nutrient_storage
+                    #    patch.nutrient_storage = 0
+                    #    break
     #return patch
 
 
@@ -75,9 +83,10 @@ def kill_animals(patch):
 def reproduce_animals(patch):
     born_animal_list = []
     for animal in patch.animal_list:
-        if animal.energy > 50:
-            born_animal_list.append( animal(animal.type) )
-            animal.energy = animal.energy - 50
+        #print(animal.type)
+        if animal.energy > 30:
+            born_animal_list.append( animal_class(animal.type) )
+            animal.energy = animal.energy - 10
 
     for animal in born_animal_list:
         patch.animal_list.append(animal)
@@ -128,7 +137,9 @@ def update_lattice(lattice, x_len, y_len):
                 #lattice[i][j] = prey_eat_nutrients(lattice[i][j])
                 prey_eat_nutrients(lattice[i][j])
                 #lattice[i][j] = patch
-                print(lattice[i][j].nutrient_storage)
+
+                #print(lattice[i][j].nutrient_storage)
+
                 #col.animal_list = pred_eat_prey( col.animal_list )
                 #col.animal_list = 
                 #for animal in lattice[i][j].animal_list:
@@ -137,10 +148,10 @@ def update_lattice(lattice, x_len, y_len):
     for i, row in enumerate(lattice):
         for j, patch in enumerate(row):
             ### Have patch grow more nutrients.
-            lattice[i][j].nutrient_storage = lattice[i][j].nutrient_storage + np.random.randint(0, 10)
+            lattice[i][j].nutrient_storage = lattice[i][j].nutrient_storage + np.random.randint(0, 11)
+
             if len(lattice[i][j].animal_list) > 0:
-                #lattice[i][j] = kill_animals(lattice[i][j])
-                #lattice[i][j] = reproduce_animals(lattice[i][j])
+                reproduce_animals(lattice[i][j])
 
                 move_animals( lattice, i, j, x_len, y_len )
 
@@ -154,7 +165,8 @@ if __name__ == '__main__':
     x_len = 10
     y_len = 10
 
-    sim_length = 100
+    sim_length = 200
+    #sim_length = 1
 
     init_prey_num = 20
     init_pred_num = 0
@@ -166,9 +178,9 @@ if __name__ == '__main__':
 
     # Right now, animals do not repeat in the same cell initially.
     for coor in prey_init_coors:
-        lattice[ coor[0] ][ coor[1] ].animal_list.append( animal('prey') )
+        lattice[ coor[0] ][ coor[1] ].animal_list.append( animal_class('prey') )
     for coor in pred_init_coors:
-        lattice[ coor[0] ][ coor[1] ].animal_list.append( animal('pred') )
+        lattice[ coor[0] ][ coor[1] ].animal_list.append( animal_class('pred') )
 
     #for i in range(x_len):
     #    for j in range(y_len):
@@ -179,6 +191,7 @@ if __name__ == '__main__':
     data = []
 
     for t in range(sim_length):
+        print('step {}'.format(t))
         #lattice = update_lattice(lattice, x_len, y_len)
         update_lattice(lattice, x_len, y_len)
 
@@ -190,5 +203,5 @@ if __name__ == '__main__':
 
     #print(lattice[5][5])
 
-    with open('test_01.pkl', 'wb') as savefile:
+    with open(save_file_name, 'wb') as savefile:
         pickle.dump(data, savefile)

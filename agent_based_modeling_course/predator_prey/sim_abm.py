@@ -35,11 +35,11 @@ class patch:
 
 
 class animal_class:
-    def __init__(self, animal_type, sex = None):
+    def __init__(self, animal_type):
         self.type = animal_type
         #self.energy = np.random.randint(10, 101)
+        # Config A. 20 initial energy.
         self.energy = 20
-        self.sex = sex
 
 
 def prey_eat_nutrients(patch):
@@ -48,6 +48,7 @@ def prey_eat_nutrients(patch):
             if animal.type == 'prey':
                 if patch.nutrient_storage > 0:
                     #if patch.nutrient_storage > 10:
+                        # Config A. rand energy exchange.
                         energy_exchange = np.random.uniform(0, patch.nutrient_storage)
 
                         animal.energy = animal.energy + energy_exchange
@@ -64,9 +65,16 @@ def prey_eat_nutrients(patch):
 
 
 def pred_eat_prey(patch):
-        
+    prey_list = [ animal for animal in patch.animal_list if animal.type == 'prey' ]
+    pred_list = [ animal for animal in patch.animal_list if animal.type == 'pred' ]
+    
+    if len(prey_list) > 0 and len(pred_list) > 0:
+        for pred in pred_list:
+            if len(prey_list) > 0:
+                prey_list = np.random.choice(prey_list, len(prey_list)-1, replace = False)
+            pred.energy = pred.energy + 80
 
-    return patch
+
 
 
 def kill_animals(patch):
@@ -84,8 +92,10 @@ def reproduce_animals(patch):
     born_animal_list = []
     for animal in patch.animal_list:
         #print(animal.type)
+        # Config A. Reproduce if > 30 energy.
         if animal.energy > 30:
             born_animal_list.append( animal_class(animal.type) )
+            # Config A. -10 energy.
             animal.energy = animal.energy - 10
 
     for animal in born_animal_list:
@@ -101,6 +111,7 @@ def move_animals(lattice, i, j, x_len, y_len):
         r = np.random.random()
 
         if r <= 4./5:
+            # Config A. -10 energy.
             animal.energy = animal.energy - 10
             animal_move_list.append( animal )
         
@@ -148,12 +159,15 @@ def update_lattice(lattice, x_len, y_len):
     for i, row in enumerate(lattice):
         for j, patch in enumerate(row):
             ### Have patch grow more nutrients.
+            # Config A. rand(0,11).
             lattice[i][j].nutrient_storage = lattice[i][j].nutrient_storage + np.random.randint(0, 11)
 
             if len(lattice[i][j].animal_list) > 0:
-                reproduce_animals(lattice[i][j])
+                reproduce_animals( lattice[i][j] )
 
                 move_animals( lattice, i, j, x_len, y_len )
+
+                pred_eat_prey( lattice[i][j] )
 
                 kill_animals( lattice[i][j] )
 
@@ -162,19 +176,20 @@ def update_lattice(lattice, x_len, y_len):
 
 
 if __name__ == '__main__':
-    x_len = 10
-    y_len = 10
+    x_len = 100
+    y_len = 100
 
-    sim_length = 200
+    sim_length = 100
     #sim_length = 1
 
-    init_prey_num = 20
-    init_pred_num = 0
+    # Config A. init_prey_num = 20.
+    init_prey_num = 500
+    init_pred_num = 400
 
     prey_init_coors = get_rand_coors(x_len, y_len, init_prey_num)
     pred_init_coors = get_rand_coors(x_len, y_len, init_pred_num)
 
-    lattice = [ [ patch(np.random.randint(0, 101) ) for j in range(y_len)] for i in range(x_len) ]
+    lattice = [ [ patch(np.random.randint(0, 201) ) for j in range(y_len)] for i in range(x_len) ]
 
     # Right now, animals do not repeat in the same cell initially.
     for coor in prey_init_coors:
@@ -196,10 +211,11 @@ if __name__ == '__main__':
         update_lattice(lattice, x_len, y_len)
 
         prey = [ [ len( [ animal for animal in patch.animal_list if animal.type == 'prey' ] ) for patch in lattice[row] ] for row in range(x_len) ]
-        #print(v)
+        pred = [ [ len( [ animal for animal in patch.animal_list if animal.type == 'pred' ] ) for patch in lattice[row] ] for row in range(x_len) ]
+
         nutrients = [ [ patch.nutrient_storage for patch in lattice[row] ] for row in range(x_len) ]
 
-        data.append( [ prey, nutrients] )
+        data.append( [ prey, pred, nutrients] )
 
     #print(lattice[5][5])
 

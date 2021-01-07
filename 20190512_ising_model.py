@@ -163,6 +163,7 @@ def initialize_lattice(dimension_size, start, x1):
     return lattice
 
 def run_trajectory_single(dimension_size, number_of_iterations, lattice, x1, save_configurations):
+    #print('hello')
     if save_mag == True:
         mag_vs_time = []
     if save_energy == True:
@@ -170,8 +171,10 @@ def run_trajectory_single(dimension_size, number_of_iterations, lattice, x1, sav
 
     if save_configurations == True:
         save_dir_name = output_directory + time.strftime('%Y_%m_%d_%H_%M_%S') + '/'
+        print(save_dir_name)
 
     for iterate in range(number_of_iterations):
+        #print(iterate)
         for i in range(dimension_size):
             for j in range(dimension_size):
                 i_up, i_down, j_left, j_right = determine_ij(i, j, dimension_size, dimension_size)
@@ -182,7 +185,7 @@ def run_trajectory_single(dimension_size, number_of_iterations, lattice, x1, sav
             overall_magnetization = 0
         if save_energy == True:
             total_energy = 0
-
+        #print('hello2')
         if save_mag == True or save_energy == True:
             for i in range(dimension_size):
                 for j in range(dimension_size):
@@ -196,11 +199,13 @@ def run_trajectory_single(dimension_size, number_of_iterations, lattice, x1, sav
                 mag_vs_time.append(overall_magnetization)
             if save_energy == True:
                 energy_vs_time.append(total_energy)
-
+        #print('hello3')
         if save_configurations == True:
+            #print('save configs')
             if not os.path.isdir(save_dir_name):
                 os.makedirs(save_dir_name)
-            file_name = save_dir_name + 'save_configurations_{0:03d}.pkl'.format(iterate)
+            file_name = save_dir_name + 'save_configurations_{0:05d}.pkl'.format(iterate)
+            #print(file_name)
             with open(file_name, 'wb') as fil:
                 pickle.dump(lattice, fil)
 

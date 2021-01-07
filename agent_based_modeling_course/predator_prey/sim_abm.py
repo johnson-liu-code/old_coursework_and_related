@@ -33,13 +33,13 @@ class patch:
         self.nutrient_storage = nutrient_storage
         self.animal_list = []
 
-
 class animal_class:
     def __init__(self, animal_type):
         self.type = animal_type
         #self.energy = np.random.randint(10, 101)
         # Config A. 20 initial energy.
         self.energy = 20
+        self.sex = np.random.choice( ['male', 'female'] )
 
 
 def prey_eat_nutrients(patch):
@@ -76,7 +76,6 @@ def pred_eat_prey(patch):
 
 
 
-
 def kill_animals(patch):
     dead_list = []
     for animal in patch.animal_list:
@@ -90,6 +89,8 @@ def kill_animals(patch):
 
 def reproduce_animals(patch):
     born_animal_list = []
+
+    '''
     for animal in patch.animal_list:
         #print(animal.type)
         # Config A. Reproduce if > 30 energy.
@@ -97,10 +98,77 @@ def reproduce_animals(patch):
             born_animal_list.append( animal_class(animal.type) )
             # Config A. -10 energy.
             animal.energy = animal.energy - 10
+    '''
 
-    for animal in born_animal_list:
-        patch.animal_list.append(animal)
+    #male_prey = [ animal for animal in patch.animal_list if animal.type == 'prey' and animal.sex == 'male' ]
+    #female_prey = [ animal for animal in patch.animal_list if animal.type == 'prey' and animal.sex == 'female' ]
 
+    not_enough_energy = []
+
+    male_prey = []
+    female_prey = []
+    male_pred = []
+    female_pred = []
+
+    for animal in patch.animal_list:
+        if animal.energy > 30:
+            if animal.type == 'prey':
+                if animal.sex == 'male':
+                    male_prey.append( animal )
+                elif animal.sex == 'female':
+                    female_prey.append( animal )
+            elif animal.type == 'pred':
+                if animal.sex == 'male':
+                    male_pred.append( animal )
+                elif animal.sex == 'female':
+                   female_pred.append( animal )
+        else:
+            not_enough_energy.append( animal )
+
+    '''
+    for male in male_prey:
+        female = np.random.choice( female_prey )
+        born_animal_list.append( animal_class( male.type ) )
+        male.energy = male.energy - 10
+        female.energy = female.energy - 10
+
+    for male in male_pred:
+        female = np.random.choice( female_pred )
+        born_animal_list.append( animal_class( male.type) )
+        male.energy = male.energy - 10
+        female.energy = female.energy - 10
+    '''
+
+    if len(female_prey) == 0:
+        female_prey = [None]
+    if len(female_pred) == 0:
+        female_pred = [None]
+
+
+    for male in male_prey + male_pred:
+        if male.type == 'prey':
+            female = np.random.choice( female_prey )
+        elif male.type == 'pred':
+            female = np.random.choice( female_pred )
+
+        if female != None:
+            if female.energy > 30:
+                born_animal_list.append( animal_class( male.type ) )
+                male.energy = male.energy - 10
+                female.energy = female.energy - 10
+
+    patch.animal_list = not_enough_energy + male_prey + male_pred + born_animal_list
+
+    if female_prey[0] != None:
+        patch.animal_list = patch.animal_list + female_prey
+    if female_pred[0] != None:
+        patch.animal_list = patch.animal_list + female_pred
+
+    #for animal in born_animal_list:
+    #    patch.animal_list.append(animal)
+
+    #for animal in patch.animal_list:
+    #    print(animal)
 
 def move_animals(lattice, i, j, x_len, y_len):
     i_up, i_down, j_left, j_right = determine_ij( i, j, x_len, y_len )
@@ -163,11 +231,11 @@ def update_lattice(lattice, x_len, y_len):
             lattice[i][j].nutrient_storage = lattice[i][j].nutrient_storage + np.random.randint(0, 11)
 
             if len(lattice[i][j].animal_list) > 0:
-                reproduce_animals( lattice[i][j] )
+                pred_eat_prey( lattice[i][j] )
 
                 move_animals( lattice, i, j, x_len, y_len )
 
-                pred_eat_prey( lattice[i][j] )
+                reproduce_animals( lattice[i][j] )
 
                 kill_animals( lattice[i][j] )
 
@@ -176,15 +244,15 @@ def update_lattice(lattice, x_len, y_len):
 
 
 if __name__ == '__main__':
-    x_len = 100
-    y_len = 100
+    x_len = 20
+    y_len = 20
 
-    sim_length = 100
+    sim_length = 500
     #sim_length = 1
 
     # Config A. init_prey_num = 20.
-    init_prey_num = 500
-    init_pred_num = 400
+    init_prey_num = 100
+    init_pred_num = 40
 
     prey_init_coors = get_rand_coors(x_len, y_len, init_prey_num)
     pred_init_coors = get_rand_coors(x_len, y_len, init_pred_num)

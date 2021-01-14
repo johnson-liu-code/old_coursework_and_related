@@ -18,7 +18,12 @@ function [ y, theta_range ] = approx_sine_JL ( theta_max, n, resolution )
 % ################################################################
 
 
+% Generate range of theta values based on theta_max and the
+%   resolution.
 theta_range = linspace( -theta_max, theta_max, resolution )';
+
+% Run the sin Taylor Series code on the theta range using n number
+%   of terms in the partial sum.
 y = sine_JL( theta_range, n );
 
 end

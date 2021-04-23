@@ -103,14 +103,14 @@ int main( int argc, char *argv[] )
     int length = std::stoi( argv[1] );
     int size = length * length;
 
-    float a = pow( 7., 5. );
-    float m = pow( 2., 31. ) - 1;
-    float c = 0;
+    // float a = pow( 7., 5. );
+    // float m = pow( 2., 31. ) - 1;
+    // float c = 0;
+    //
+    // float q = m / a;
+    // float r = m % a;
 
-    float q = m / a;
-    float r = m % a;
-
-    float x1 = pow( 5.5, 13. ) ;
+    // float x1 = pow( 5.5, 13. ) ;
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );

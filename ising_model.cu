@@ -215,7 +215,7 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 
 int main( int argc, char *argv[] )
 {
-    if ( argc != 4 )
+    if ( argc != 5 )
     {
         // Print out the necessary command line imputs.
         printf( "Arguments for execution: %s <filename> <length> <J> <beta> <trajecs>\n", argv[0] );
@@ -226,7 +226,7 @@ int main( int argc, char *argv[] )
 
     float J = std::stof( argv[2] );
     float beta = std::stof( argv[3] );
-    int trajecs = std::stoi( argv[3] );
+    int trajecs = std::stoi( argv[4] );
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );

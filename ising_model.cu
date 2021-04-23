@@ -40,10 +40,11 @@ Output: ------------------------------------------------------------------------
 // Import libraries to use various functions.
 #include <time.h>                   // For measuring runtimes.
 #include <sys/time.h>               // For measuring runtimes.
-#include <stdlib.h>
+#include <stdlib.h>                 /* srand, rand */
 #include <stdio.h>                  // For interaction with console.
-#include <iostream>                 // For printing to screen.
+#include <iostream>                 // For printing to screen (std::cout, std::endl).
 #include <cuda.h>                   // For CUDA parallelization on GPU.
+// =====================================================================================================
 
 
 
@@ -54,10 +55,48 @@ Output: ------------------------------------------------------------------------
 
 
 
-
-
-int main()
+int main( int argc, char *argv[] )
 {
+
+    int length = argv[1];
+    int size = length * length;
+
+    int *grid;
+    grid = (int *)malloc( sizeof(int) * size );
+
+    float r, i, j, index;
+    for ( i = 0; i < length; i++ )
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+            index = length * i + j;
+
+            if ( r <= 0.5 )
+            {
+                grid[index] = -1;
+            }
+            else
+            {
+                grid[index] = 1;
+            }
+
+        }
+    }
+
+
+    for ( i = 0; i < length; i++)
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            index = length * i + j
+            std::cout << grid[index] << std::endl;
+        }
+    }
+
+
+
+
 
 
 

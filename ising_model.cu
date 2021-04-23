@@ -94,28 +94,28 @@ int *determine_ij( int i, int j, int length ):
     }
     else if ( i == length - 1)
     {
-        i_up = 0
-        i_down = i - 1
+        i_up = 0;
+        i_down = i - 1;
     }
     else
     {
-        i_up = i + 1
-        i_down = i - 1
+        i_up = i + 1;
+        i_down = i - 1;
     }
     if ( j == 0 )
     {
-        j_left = length - 1
-        j_right = 1
+        j_left = length - 1;
+        j_right = 1;
     }
     else if ( j == length - 1)
     {
-        j_left = j - 1
-        j_right = 0
+        j_left = j - 1;
+        j_right = 0;
     }
     else
     {
-        j_left = j - 1
-        j_right = j + 1
+        j_left = j - 1;
+        j_right = j + 1;
     }
 
     int ij[4] = { i_up, i_down, j_left, j_right };

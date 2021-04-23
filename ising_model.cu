@@ -129,7 +129,7 @@ void determine_ij( int i, int j, int length, int *ij )
 void accept_reject( float x1, float y, float a, float q, float r, float m, float *x1r1 )
 {
 
-    x1 = x1 % q;
+    x1 = fmod( x1, q );
     // x1 = a * (x1 % q) - (r * x1)/q
 
     if ( x1 < 0 )
@@ -148,7 +148,7 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 {
     int i, j, index, up_index, down_index, left_index, right_index;
 
-    float energy_old, energy_new, y;
+    float energy_old, energy_new, y, r1;
     bool change;
 
 
@@ -157,7 +157,7 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            determine_ij( i, j, length );
+            determine_ij( i, j, length, ij );
 
             up_index    = length * ij[0] + j;
             down_index  = length * ij[1] + j;
@@ -205,14 +205,17 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 
 int main( int argc, char *argv[] )
 {
-    if ( argc != 2 )
+    if ( argc != 4 )
     {
         // Print out the necessary command line imputs.
-        printf( "Arguments for execution: %s <filename> <length>\n", argv[0] );
+        printf( "Arguments for execution: %s <filename> <length> <J> <beta>\n", argv[0] );
     }
 
     int length = std::stoi( argv[1] );
     int size = length * length;
+
+    float J = std::stof( argv[2] );
+    float beta = std::stof( argv[3] );
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );
@@ -221,11 +224,11 @@ int main( int argc, char *argv[] )
     ij = (int *)malloc( sizeof(int) * 4 );
 
     float *x1r1;
-    x1r1 = (int *)malloc( sizeof(int) * 2 );
+    x1r1 = (float *)malloc( sizeof(float) * 2 );
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );
-    update_lattice( grid, length, ij, x1r1 );
+    update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
 
 
 

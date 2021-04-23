@@ -137,12 +137,9 @@ void update_lattice( int *grid, int length )
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            determine_ij( i, j, length );
+            determine_ij( i, j, length, ij );
 
-            std::cout << "up: " << ij[0] << ", down: " << ij[1]
-                << ", left: " << ij[2] << ", right: " << ij[3]
-                << std::endl;
-
+            std::cout << "up: " << ij[0] << ", down: " << ij[1] << ", left: " << ij[2] << ", right: " << ij[3] << std::endl;
         }
     }
 }

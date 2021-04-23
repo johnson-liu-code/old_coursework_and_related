@@ -49,21 +49,27 @@ Output: ------------------------------------------------------------------------
 
 
 
+// float accept_reject( float x1, float y, float a, float q, float r, float m ):
+// {
+//     // Generate random number.
+//     x1 = a*(x1 % q) - (r*x1)/q
+//
+//     if x1 < 0:
+//         x1 += m
+//
+//     r1 = x1/m
+//
+//     // If random number is less than y, change the spin.
+//     if r1 <= y:
+//         change = True
+//     else:
+//         change = False
+//
+//     return x1
+// }
 
-
-
-
-
-
-int main( int argc, char *argv[] )
+void initialize_lattice( float *grid, int length )
 {
-
-    int length = std::stoi( argv[1] );
-    int size = length * length;
-
-    int *grid;
-    grid = (int *)malloc( sizeof(int) * size );
-
     int i, j, index;
     float r;
     for ( i = 0; i < length; i++ )
@@ -81,9 +87,54 @@ int main( int argc, char *argv[] )
             {
                 grid[index] = 1;
             }
-
         }
     }
+}
+
+
+int main( int argc, char *argv[] )
+{
+    if ( argc != 2 )
+    {
+        // Print out the necessary command line imputs.
+        printf( "Arguments for execution: %s <filename> <length>\n", argv[0] );
+    }
+
+    int length = std::stoi( argv[1] );
+    int size = length * length;
+
+    float a = pow( 7., 5. );
+    float m = pow( 2., 31. ) - 1;
+    float c = 0;
+
+    float q = m / a;
+    float r = m % a;
+
+    float x1 = pow( 5.5, 13. ) ;
+
+    int *grid;
+    grid = (int *)malloc( sizeof(int) * size );
+
+    // int i, j, index;
+    // float r;
+    // for ( i = 0; i < length; i++ )
+    // {
+    //     for ( j = 0; j < length; j++ )
+    //     {
+    //         r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    //         index = length * i + j;
+    //
+    //         if ( r <= 0.5 )
+    //         {
+    //             grid[index] = -1;
+    //         }
+    //         else
+    //         {
+    //             grid[index] = 1;
+    //         }
+    //
+    //     }
+    // }
 
 
     for ( i = 0; i < length; i++)

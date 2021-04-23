@@ -136,7 +136,7 @@ int main( int argc, char *argv[] )
     //     }
     // }
 
-
+    int i, j, index;
     for ( i = 0; i < length; i++)
     {
         for ( j = 0; j < length; j++ )

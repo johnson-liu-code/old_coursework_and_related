@@ -129,18 +129,17 @@ void determine_ij( int i, int j, int length, int *ij )
 void accept_reject( float x1, float y, float a, float q, float r, float m, float *x1r1 )
 {
 
-    x1 = fmod( x1, q );
-    // x1 = a * (x1 % q) - (r * x1)/q
+    x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
     if ( x1 < 0 )
     {
         x1 += m;
     }
 
-    // float r1 = x1 / m;
-    //
-    // x1r1[0] = x1;
-    // x1r1[0] = r1;
+    float r1 = x1 / m;
+
+    x1r1[0] = x1;
+    x1r1[0] = r1;
 }
 
 void update_lattice( int *grid, int length, float J, float beta, float x1,
@@ -225,6 +224,15 @@ int main( int argc, char *argv[] )
 
     float *x1r1;
     x1r1 = (float *)malloc( sizeof(float) * 2 );
+
+    float a = 7.**5;
+    float m = 2**31 - 1;
+    float c = 0;
+
+    float q = m / a;
+    float r = fmod( m, a );
+
+    float x1 = 5.5**13;
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );

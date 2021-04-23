@@ -83,6 +83,68 @@ void print_lattice( int *grid, int length )
     }
 }
 
+int *determine_ij( int i, int j, int length ):
+{
+    int i_up, i_down, j_left, j_right;
+
+    if ( i == 0 )
+    {
+        i_up = 1;
+        i_down = length - 1;
+    }
+    else if ( i == length - 1)
+    {
+        i_up = 0
+        i_down = i - 1
+    }
+    else
+    {
+        i_up = i + 1
+        i_down = i - 1
+    }
+    if ( j == 0 )
+    {
+        j_left = length - 1
+        j_right = 1
+    }
+    else if ( j == length - 1)
+    {
+        j_left = j - 1
+        j_right = 0
+    }
+    else
+    {
+        j_left = j - 1
+        j_right = j + 1
+    }
+
+    int ij[4] = { i_up, i_down, j_left, j_right };
+
+    return ij;
+}
+
+void update_lattice( int *grid, int length )
+{
+    int i, j, index;
+    int ij[4];
+    for ( i = 0; i < length; i++)
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            index = length * i + j;
+
+            ij = determine_ij( i, j, length );
+
+            std::cout << "up: " << ij[0] << ", down: " << ij[1]
+                << ", left: " << ij[2] << ", right: " << ij[3]
+                << std::endl;
+
+        }
+    }
+}
+
+
+
 int main( int argc, char *argv[] )
 {
     if ( argc != 2 )

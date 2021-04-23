@@ -78,8 +78,9 @@ void print_lattice( int *grid, int length )
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            std::cout << (grid)[ index ] << std::endl;
+            std::cout << (grid)[ index ] <<  " ";
         }
+        std::cout << std::endl;
     }
 }
 
@@ -227,7 +228,6 @@ int main( int argc, char *argv[] )
 
     float a = pow( 7, 5 );
     float m = pow( 2, 31 ) - 1;
-    float c = 0;
 
     float q = m / a;
     float r = fmod( m, a );

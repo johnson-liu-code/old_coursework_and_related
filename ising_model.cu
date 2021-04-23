@@ -68,7 +68,7 @@ Output: ------------------------------------------------------------------------
 //     return x1
 // }
 
-void initialize_lattice( float *grid, int length )
+void initialize_lattice( int *grid, int length )
 {
     int i, j, index;
     float r;

@@ -225,14 +225,14 @@ int main( int argc, char *argv[] )
     float *x1r1;
     x1r1 = (float *)malloc( sizeof(float) * 2 );
 
-    float a = 7.**5;
-    float m = 2**31 - 1;
+    float a = pow( 7, 5 );
+    float m = pow( 2, 31 ) - 1;
     float c = 0;
 
     float q = m / a;
     float r = fmod( m, a );
 
-    float x1 = 5.5**13;
+    float x1 = pow( 5.5, 13 );
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );

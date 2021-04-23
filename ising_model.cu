@@ -83,7 +83,7 @@ void print_lattice( int *grid, int length )
     }
 }
 
-int determine_ij( int i, int j, int length ):
+int *determine_ij( int i, int j, int length ):
 {
     int i_up, i_down, j_left, j_right;
 
@@ -118,7 +118,12 @@ int determine_ij( int i, int j, int length ):
         j_right = j + 1;
     }
 
-    int ij[4] = { i_up, i_down, j_left, j_right };
+    int *ij;
+    ij = (int *)malloc( sizeof(int) * 4 );
+    ij[0] = i_up;
+    ij[1] = i_down;
+    ij[2] = j_left;
+    ij[3] = j_right;
 
     return ij;
 }
@@ -126,7 +131,9 @@ int determine_ij( int i, int j, int length ):
 void update_lattice( int *grid, int length )
 {
     int i, j, index;
-    int ij[4];
+    int *ij;
+    ij = (int *)malloc( sizeof(int) * 4 );
+
     for ( i = 0; i < length; i++)
     {
         for ( j = 0; j < length; j++ )

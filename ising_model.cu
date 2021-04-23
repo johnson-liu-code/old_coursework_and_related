@@ -83,7 +83,7 @@ void print_lattice( int *grid, int length )
     }
 }
 
-void determine_ij( int i, int j, int length, int *ij ):
+void determine_ij( int i, int j, int length, int *ij )
 {
     int i_up, i_down, j_left, j_right;
 

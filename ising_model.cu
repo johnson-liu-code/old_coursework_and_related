@@ -68,7 +68,7 @@ Output: ------------------------------------------------------------------------
 //     return x1
 // }
 
-void initialize_lattice( float *grid, int length )
+void initialize_lattice( float **grid, int length )
 {
     int i, j, index;
     float r;
@@ -81,11 +81,11 @@ void initialize_lattice( float *grid, int length )
 
             if ( r <= 0.5 )
             {
-                (grid)[index] = -1;
+                (*grid)[index] = -1;
             }
             else
             {
-                (grid)[index] = 1;
+                (*grid)[index] = 1;
             }
         }
     }

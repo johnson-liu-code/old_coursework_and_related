@@ -226,7 +226,7 @@ int main( int argc, char *argv[] )
 
     float J = std::stof( argv[2] );
     float beta = std::stof( argv[3] );
-    int trajecs = std::stoi( argv[3] )
+    int trajecs = std::stoi( argv[3] );
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );

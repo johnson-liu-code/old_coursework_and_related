@@ -136,13 +136,15 @@ int main( int argc, char *argv[] )
     //     }
     // }
 
+    initialize_lattice( grid, length );
+
     int i, j, index;
     for ( i = 0; i < length; i++)
     {
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            std::cout << &grid[index] << std::endl;
+            std::cout << grid[index] << std::endl;
         }
     }
 

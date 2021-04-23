@@ -83,7 +83,7 @@ void print_lattice( int *grid, int length )
     }
 }
 
-void determine_ij( int i, int j, int length )
+void determine_ij( int i, int j, int length, int *ij )
 {
     int i_up, i_down, j_left, j_right;
 
@@ -126,23 +126,25 @@ void determine_ij( int i, int j, int length )
     ij[3] = j_right;
 }
 
-void accept_reject( float x1, float y, float a, float q, float r, float m )
+void accept_reject( float x1, float y, float a, float q, float r, float m, float *x1r1 )
 {
-    x1 = a * (x1 % q) - (r * x1)/q
+
+    x1 = x1 % q;
+    // x1 = a * (x1 % q) - (r * x1)/q
 
     if ( x1 < 0 )
     {
         x1 += m;
     }
 
-    float r1 = x1 / m;
-
-    x1r1[0] = x1;
-    x1r1[0] = r1;
+    // float r1 = x1 / m;
+    //
+    // x1r1[0] = x1;
+    // x1r1[0] = r1;
 }
 
 void update_lattice( int *grid, int length, float J, float beta, float x1,
-                        float a, float q, float r, float m )
+                        float a, float q, float r, float m, int *ij, float *x1r1 )
 {
     int i, j, index, up_index, down_index, left_index, right_index;
 
@@ -169,27 +171,27 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 
             if ( energy_new <= energy_old )
             {
-                change = TRUE;
+                change = true;
             }
             else
             {
-                y = exp( -beta * (E_new - E_old) );
-                accept_reject( x1, y, a, q, r, m );
+                y = exp( -beta * ( energy_new - energy_old ) );
+                accept_reject( x1, y, a, q, r, m, x1r1 );
 
                 x1 = x1r1[0];
                 r1 = x1r1[1];
 
                 if ( r1 <= y )
                 {
-                    change = TRUE;
+                    change = true;
                 }
                 else
                 {
-                    change = FALSE;
+                    change = false;
                 }
             }
 
-            if ( change == TRUE )
+            if ( change == true )
             {
                 (grid)[ index ] = -(grid)[ index ];
             }
@@ -223,7 +225,7 @@ int main( int argc, char *argv[] )
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );
-    update_lattice( grid, length );
+    update_lattice( grid, length, ij, x1r1 );
 
 
 

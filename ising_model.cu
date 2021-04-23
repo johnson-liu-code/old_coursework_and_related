@@ -162,7 +162,7 @@ int main( int argc, char *argv[] )
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );
-
+    update_lattice( grid, length );
 
 
 

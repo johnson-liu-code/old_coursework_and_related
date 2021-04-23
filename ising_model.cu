@@ -72,13 +72,23 @@ void initialize_lattice( int *grid, int length )
 
 void print_lattice( int *grid, int length )
 {
-    int i, j, index;
+    int i, j, index, spin;
     for ( i = 0; i < length; i++)
     {
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            std::cout << (grid)[ index ] <<  " ";
+            spin = (grid)[ index ];
+
+            if ( spin == 1)
+            {
+                std::cout << " " << 1 <<  " ";
+            }
+            else
+            {
+                std::cout << -1 <<  " ";
+            }
+
         }
         std::cout << std::endl;
     }
@@ -208,7 +218,7 @@ int main( int argc, char *argv[] )
     if ( argc != 4 )
     {
         // Print out the necessary command line imputs.
-        printf( "Arguments for execution: %s <filename> <length> <J> <beta>\n", argv[0] );
+        printf( "Arguments for execution: %s <filename> <length> <J> <beta> <trajecs>\n", argv[0] );
     }
 
     int length = std::stoi( argv[1] );
@@ -216,6 +226,7 @@ int main( int argc, char *argv[] )
 
     float J = std::stof( argv[2] );
     float beta = std::stof( argv[3] );
+    int trajecs = std::stoi( argv[3] )
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );
@@ -236,7 +247,13 @@ int main( int argc, char *argv[] )
 
     initialize_lattice( grid, length );
     print_lattice( grid, length );
-    update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
+
+    for ( int t = 0; t < trajecs; t++ )
+    {
+        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
+        print_lattice( grid, length );
+    }
+
 
 
 

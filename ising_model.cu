@@ -58,13 +58,14 @@ Output: ------------------------------------------------------------------------
 int main( int argc, char *argv[] )
 {
 
-    int length = argv[1];
+    int length = std::stoi( argv[1] );
     int size = length * length;
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );
 
-    float r, i, j, index;
+    int i, j, index;
+    float r;
     for ( i = 0; i < length; i++ )
     {
         for ( j = 0; j < length; j++ )
@@ -89,7 +90,7 @@ int main( int argc, char *argv[] )
     {
         for ( j = 0; j < length; j++ )
         {
-            index = length * i + j
+            index = length * i + j;
             std::cout << grid[index] << std::endl;
         }
     }

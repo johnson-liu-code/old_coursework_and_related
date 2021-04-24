@@ -43,6 +43,7 @@ Output: ------------------------------------------------------------------------
 #include <stdlib.h>                 /* srand, rand */
 #include <stdio.h>                  // For interaction with console.
 #include <iostream>                 // For printing to screen (std::cout, std::endl).
+#include <fstream>
 #include <cuda.h>                   // For CUDA parallelization on GPU.
 // =====================================================================================================
 
@@ -70,9 +71,13 @@ void initialize_lattice( int *grid, int length )
     }
 }
 
-void print_lattice( int *grid, int length )
+void print_lattice( int *grid, int length, int t )
 {
     int i, j, index, spin;
+
+    std::string filename = "grid_t_" + std::to_string( t ) + ".out";
+    std::ofstream outfile ( filename );
+
     for ( i = 0; i < length; i++)
     {
         for ( j = 0; j < length; j++ )
@@ -82,16 +87,21 @@ void print_lattice( int *grid, int length )
 
             if ( spin == 1)
             {
-                std::cout << " " << 1 <<  " ";
+                std::cout << " " << 1 <<  ", ";
+                outfile << " " << 1 <<  ", ";
             }
             else
             {
-                std::cout << -1 <<  " ";
+                std::cout << -1 <<  ", ";
+                outfile << -1 <<  ", ";
             }
 
         }
         std::cout << std::endl;
+        outfile << std::endl;
     }
+
+    outfile.close();
 }
 
 void determine_ij( int i, int j, int length, int *ij )
@@ -251,7 +261,7 @@ int main( int argc, char *argv[] )
     for ( int t = 0; t < trajecs; t++ )
     {
         update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
-        print_lattice( grid, length );
+        print_lattice( grid, length, t );
     }
 
 

@@ -82,11 +82,19 @@ void print_lattice( int *grid, int length, int t )
     // std::string filename = "grid_t_" + std::to_string( t ) + ".out";
 
     int n_zero = 5;
-    std::string num_string = std::to_string( t ) + ".out";
+    std::string num_string = std::to_string( t );
     // std::string padded_num_string = std::string( n_zero - num_string.length(), '0' ) + num_string;
     // std::string filename = "grid_t_" + padded_num_string;
-    std::ofstream outfile ( num_string );
-    // std::ofstream outfile ( filename );
+    // std::ofstream outfile ( num_string );
+
+    int string_length = num_string.length();
+    for ( int k = 0; k < n_zero - string_length; k++ )
+    {
+        num_string = "0" + num_string;
+    }
+
+    std::string filename = "grid_t_" + num_string;
+    std::ofstream outfile ( filename );
 
     for ( i = 0; i < length; i++)
     {

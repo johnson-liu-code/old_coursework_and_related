@@ -256,9 +256,9 @@ int main( int argc, char *argv[] )
     float x1 = pow( 5.5, 13 );
 
     initialize_lattice( grid, length );
-    print_lattice( grid, length );
+    print_lattice( grid, length, 0 );
 
-    for ( int t = 0; t < trajecs; t++ )
+    for ( int t = 1; t < trajecs; t++ )
     {
         update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
         print_lattice( grid, length, t );

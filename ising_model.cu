@@ -75,7 +75,7 @@ void print_lattice( int *grid, int length, int t )
 {
     int i, j, index, spin;
 
-    std::string filename = "grid_t_" + std::to_string( t ) + ".out";
+    std::string filename = "data/20210423_001_grid_t_" + std::to_string( t ) + ".out";
     std::ofstream outfile ( filename );
 
     for ( i = 0; i < length; i++)

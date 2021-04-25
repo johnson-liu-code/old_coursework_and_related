@@ -181,7 +181,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
     x1r1[0] = x1;
     x1r1[1] = r1;
 
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
 }
 
@@ -225,7 +225,7 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
                 // x1 = x1r1[0];
                 r1 = x1r1[1];
 
-                std::cout << "y: " << y << ", r1: " << r1 << std::endl;
+                // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
                 if ( r1 <= y )
                 // if ( n <= y )

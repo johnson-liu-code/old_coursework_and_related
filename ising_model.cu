@@ -185,14 +185,14 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 
 }
 
-// void update_lattice( int *grid, int length, float J, float beta, float x1,
-                        // float a, float q, float r, float m, int *ij, float *x1r1 )
-void update_lattice( int *grid, int length, float J, float beta, int *ij )
+void update_lattice( int *grid, int length, float J, float beta, float x1,
+                        float a, float q, float r, float m, int *ij, float *x1r1 )
+// void update_lattice( int *grid, int length, float J, float beta, int *ij )
 {
     int i, j, index, up_index, down_index, left_index, right_index;
     float n;
-    // float energy_old, energy_new, y, r1;
-    float energy_old, energy_new, y;
+    float energy_old, energy_new, y, r1;
+    // float energy_old, energy_new, y;
     bool change;
 
     for ( i = 0; i < length; i++)
@@ -219,16 +219,16 @@ void update_lattice( int *grid, int length, float J, float beta, int *ij )
             else
             {
                 y = exp( -beta * ( energy_new - energy_old ) );
-                // accept_reject( y, a, q, r, m, x1r1 );
-                n = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+                accept_reject( y, a, q, r, m, x1r1 );
+                // n = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
                 // x1 = x1r1[0];
-                // r1 = x1r1[1];
+                r1 = x1r1[1];
 
                 // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
-                // if ( r1 <= y )
-                if ( n <= y )
+                if ( r1 <= y )
+                // if ( n <= y )
                 {
                     change = true;
                 }
@@ -285,14 +285,14 @@ int main( int argc, char *argv[] )
 
     // std::cout << "a: " << a << ", m: " << m << ", q: " << q << ", r: " << r << ", x1: " << x1 << std::endl;
 
-    std::cout << "fmod(3.5, 2): " << fmod(3.5, 2) << std::endl;
+    // std::cout << "fmod(3.5, 2): " << fmod(3.5, 2) << std::endl;
 
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        update_lattice( grid, length, J, beta, ij );
+        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 )
         print_lattice( grid, length, t );
     }
 

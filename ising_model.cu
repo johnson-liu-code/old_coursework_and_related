@@ -93,7 +93,7 @@ void print_lattice( int *grid, int length, int t )
         num_string = "0" + num_string;
     }
 
-    std::string filename = "grid_t_" + num_string;
+    std::string filename = "grid_t_" + num_string + ".out";
     std::ofstream outfile ( filename );
 
     for ( i = 0; i < length; i++)
@@ -165,9 +165,10 @@ void determine_ij( int i, int j, int length, int *ij )
     ij[3] = j_right;
 }
 
-void accept_reject( float x1, float y, float a, float q, float r, float m, float *x1r1 )
+void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 {
 
+    x1 = x1r1[0];
     x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
     if ( x1 < 0 )
@@ -188,7 +189,6 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 
     float energy_old, energy_new, y, r1;
     bool change;
-
 
     for ( i = 0; i < length; i++)
     {
@@ -214,10 +214,12 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
             else
             {
                 y = exp( -beta * ( energy_new - energy_old ) );
-                accept_reject( x1, y, a, q, r, m, x1r1 );
+                accept_reject( y, a, q, r, m, x1r1 );
 
-                x1 = x1r1[0];
+                // x1 = x1r1[0];
                 r1 = x1r1[1];
+
+                std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
                 if ( r1 <= y )
                 {

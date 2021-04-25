@@ -181,7 +181,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
     x1r1[0] = x1;
     x1r1[0] = r1;
 
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
 }
 
@@ -271,17 +271,19 @@ int main( int argc, char *argv[] )
     int *ij;
     ij = (int *)malloc( sizeof(int) * 4 );
 
-    // float *x1r1;
-    // x1r1 = (float *)malloc( sizeof(float) * 2 );
+    float *x1r1;
+    x1r1 = (float *)malloc( sizeof(float) * 2 );
 
-    // float a = pow( 7, 5 );
-    // float m = pow( 2, 31 ) - 1;
+    float a = pow( 7, 5 );
+    float m = pow( 2, 31 ) - 1;
 
-    // float q = m / a;
-    // float r = fmod( m, a );
+    float q = m / a;
+    float r = fmod( m, a );
 
-    // float x1 = pow( 5.5, 13 );
-    // x1r1[0] = x1;
+    float x1 = pow( 5.5, 13 );
+    x1r1[0] = x1;
+
+    std::cout << "a: " << a << ", m: " << m << ", q: " << q << ", r: " << r << ", x1: " << x1 << std::endl;
 
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );

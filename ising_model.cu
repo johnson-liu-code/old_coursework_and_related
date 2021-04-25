@@ -181,7 +181,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
     x1r1[0] = x1;
     x1r1[0] = r1;
 
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
 }
 
@@ -277,6 +277,7 @@ int main( int argc, char *argv[] )
     float r = fmod( m, a );
 
     float x1 = pow( 5.5, 13 );
+    x1r1[0] = x1;
 
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );

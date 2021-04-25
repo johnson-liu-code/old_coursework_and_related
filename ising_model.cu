@@ -190,7 +190,7 @@ void update_lattice( int *grid, int length, float J, float beta, float x1,
 // void update_lattice( int *grid, int length, float J, float beta, int *ij )
 {
     int i, j, index, up_index, down_index, left_index, right_index;
-    float n;
+    // float n;
     float energy_old, energy_new, y, r1;
     // float energy_old, energy_new, y;
     bool change;
@@ -292,7 +292,7 @@ int main( int argc, char *argv[] )
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 )
+        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
         print_lattice( grid, length, t );
     }
 

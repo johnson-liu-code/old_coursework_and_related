@@ -168,7 +168,7 @@ void determine_ij( int i, int j, int length, int *ij )
 void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 {
 
-    x1 = x1r1[0];
+    float x1 = x1r1[0];
     x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
     if ( x1 < 0 )

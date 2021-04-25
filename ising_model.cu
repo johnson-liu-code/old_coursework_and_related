@@ -181,7 +181,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
     x1r1[0] = x1;
     x1r1[0] = r1;
 
-    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
 }
 
@@ -274,8 +274,8 @@ int main( int argc, char *argv[] )
     float *x1r1;
     x1r1 = (float *)malloc( sizeof(float) * 2 );
 
-    float a = pow( 7, 5 );
-    float m = pow( 2, 31 ) - 1;
+    float a = pow( 7., 5 );
+    float m = pow( 2., 31 ) - 1.;
 
     float q = m / a;
     float r = fmod( m, a );

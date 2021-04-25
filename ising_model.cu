@@ -179,7 +179,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
     float r1 = x1 / m;
 
     x1r1[0] = x1;
-    x1r1[0] = r1;
+    x1r1[1] = r1;
 
     std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 

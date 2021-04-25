@@ -283,7 +283,9 @@ int main( int argc, char *argv[] )
     float x1 = pow( 5.5, 13 );
     x1r1[0] = x1;
 
-    std::cout << "a: " << a << ", m: " << m << ", q: " << q << ", r: " << r << ", x1: " << x1 << std::endl;
+    // std::cout << "a: " << a << ", m: " << m << ", q: " << q << ", r: " << r << ", x1: " << x1 << std::endl;
+
+    std::cout << "fmod(3.5, 2): " << fmod(3.5, 2) << std::endl;
 
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );

@@ -57,7 +57,7 @@ void initialize_lattice( int *grid, int length )
         for ( j = 0; j < length; j++ )
         {
             r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-            index = length * i + j;
+            index = ( length * i ) + j;
 
             if ( r <= 0.5 )
             {
@@ -87,7 +87,7 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
                 x1 += m;
             }
 
-            // std::cout << "x1: " << x1 << std::endl;
+            index = ( length * i ) + j;
 
             x1_grid[ index ] = x1;
         }
@@ -115,7 +115,7 @@ void print_lattice( int *grid, int length, int t )
     {
         for ( j = 0; j < length; j++ )
         {
-            index = length * i + j;
+            index = ( length * i ) + j;
             spin = (grid)[ index ];
 
             if ( spin == 1)
@@ -177,12 +177,9 @@ void determine_ij( int i, int j, int length, int *ij )
     ij[3] = j_right;
 }
 
-// void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
                     float *r1_grid, int index )
 {
-
-    // float x1 = x1r1[0];
     float x1 = x1_grid[ index ];
 
     x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
@@ -193,23 +190,15 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
     }
 
     float r1 = x1 / m;
-
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
-
-    // x1r1[0] = x1;
-    // x1r1[1] = r1;
     x1_grid[ index ] = x1;
     r1_grid[ index ] = r1;
 }
 
-
-
-// void update_lattice( int *grid, int length, float J, float beta, float x1,
-//                         float a, float q, float r, float m, int *ij, float *x1r1 )
 void update_lattice( int *grid, int length, float J, float beta, float a, float q,
-                        float r, float m, int *ij, float *x1_grid, float *r1_grid )
+                        float r, float m, float *x1_grid, float *r1_grid )
 {
-    int i, j, index, up_index, down_index, left_index, right_index;
+    int i, j, i_up, i_down, j_left, j_right;
+    int index, up_index, down_index, left_index, right_index;
     float energy_old, energy_new, y, r1;
     bool change;
 
@@ -217,13 +206,44 @@ void update_lattice( int *grid, int length, float J, float beta, float a, float 
     {
         for ( j = 0; j < length; j++ )
         {
-            index = length * i + j;
-            determine_ij( i, j, length, ij );
+            index = ( length * i ) + j;
+            // determine_ij( i, j, length, ij );
 
-            up_index    = length * ij[0] + j;
-            down_index  = length * ij[1] + j;
-            left_index  = length * i + ij[2];
-            right_index = length * i + ij[3];
+            if ( i == 0 )
+            {
+                i_up = 1;
+                i_down = length - 1;
+            }
+            else if ( i == length - 1)
+            {
+                i_up = 0;
+                i_down = i - 1;
+            }
+            else
+            {
+                i_up = i + 1;
+                i_down = i - 1;
+            }
+            if ( j == 0 )
+            {
+                j_left = length - 1;
+                j_right = 1;
+            }
+            else if ( j == length - 1)
+            {
+                j_left = j - 1;
+                j_right = 0;
+            }
+            else
+            {
+                j_left = j - 1;
+                j_right = j + 1;
+            }
+
+            up_index    = ( length * i_up )   + j;
+            down_index  = ( length * i_down ) + j;
+            left_index  = ( length * i )      + j_left;
+            right_index = ( length * i )      + j_right;
 
             energy_old = -J * (grid)[ index ] * ( (grid)[ up_index ] + (grid)[ down_index ]
                 + (grid)[ left_index ] + (grid)[ right_index ] );
@@ -237,13 +257,9 @@ void update_lattice( int *grid, int length, float J, float beta, float a, float 
             else
             {
                 y = exp( -beta * ( energy_new - energy_old ) );
-                // accept_reject( y, a, q, r, m, x1r1 );
                 accept_reject( y, a, q, r, m, x1_grid, r1_grid, index );
 
-                // r1 = x1r1[1];
                 r1 = r1_grid[ index ];
-
-                // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
                 if ( r1 <= y )
                 {
@@ -293,31 +309,19 @@ int main( int argc, char *argv[] )
     float *r1_grid;
     r1_grid = (float *)malloc( sizeof(float) * size );
 
-    int *ij;
-    ij = (int *)malloc( sizeof(int) * 4 );
-
-    // float *x1r1;
-    // x1r1 = (float *)malloc( sizeof(float) * 2 );
-
     float a = pow( 7., 5 );
     float m = pow( 2., 31 ) - 1.;
 
     float q = m / a;
     float r = fmod( m, a );
 
-    // float x1 = pow( 5.5, 13 );
-    // x1r1[0] = x1;
-
     initialize_x1_grid( a, q, r, m, x1_grid, length );
-
-
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        // update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
-        update_lattice( grid, length, J, beta, a, q, r, m, ij, x1_grid, r1_grid );
+        update_lattice( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
         print_lattice( grid, length, t );
     }
 

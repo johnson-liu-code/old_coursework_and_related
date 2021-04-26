@@ -136,24 +136,6 @@ void print_grid( int *grid, int length, int t )
     outfile.close();
 }
 
-void initialize_ij_grid( int *ij_grid, int length )
-{
-    int *ij;
-    ij = (int *)malloc( sizeof(int) * 4 );
-
-    int i, j, index;
-
-    for ( i = 0; i < length, i++ )
-    {
-        for ( j = 0; j < length; j++ )
-        {
-            index = length * i + j;
-            determine_ij( i, j, length, ij);
-            ij_grid[ index ] = ij;
-        }
-    }
-}
-
 void determine_ij( int i, int j, int length, int *ij )
 {
     int i_up, i_down, j_left, j_right;
@@ -193,6 +175,24 @@ void determine_ij( int i, int j, int length, int *ij )
     ij[1] = i_down;
     ij[2] = j_left;
     ij[3] = j_right;
+}
+
+void initialize_ij_grid( int *ij_grid, int length )
+{
+    int *ij;
+    ij = (int *)malloc( sizeof(int) * 4 );
+
+    int i, j, index;
+
+    for ( i = 0; i < length; i++ )
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            index = length * i + j;
+            determine_ij( i, j, length, ij);
+            ij_grid[ index ] = ij;
+        }
+    }
 }
 
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
@@ -248,8 +248,8 @@ void update_grid( int *grid, int length, float J, float beta, float a, float q,
     float energy_old, energy_new, y, r1;
     bool change;
 
-    int *ij;
-    ij = (int *)malloc( sizeof(int) * 4 );
+    // int *ij;
+    // ij = (int *)malloc( sizeof(int) * 4 );
 
     for ( i = 0; i < length; i++ )
     {

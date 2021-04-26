@@ -229,7 +229,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
     float up_index_energy, down_index_energy, left_index_energy, right_index_energy;
 
-    float energy_old, energy_new, y, r1;
+    float energy_old, energy_new, y, x1, r1;
     bool change;
 
     // If the thread is within the bounds of the grid ...
@@ -396,9 +396,25 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             y = exp( -beta * ( energy_new - energy_old ) );
-            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
+            // accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
-            r1 = d_r1_grid[ index_global ];
+            x1 = d_x1_grid[ index_global ];
+
+            x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
+
+            if ( x1 < 0 )
+            {
+                x1 += m;
+            }
+
+            r1 = x1 / m;
+
+            // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+
+            d_x1_grid[ index_gloabl ] = x1;
+            d_r1_grid[ index_global ] = r1;
+
+            // r1 = d_r1_grid[ index_global ];
 
             if ( r1 <= y )
             {

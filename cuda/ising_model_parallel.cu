@@ -217,7 +217,9 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
     // Wait for all threads to finish.
     __syncthreads();
 
-    int x_local, y_local;
+    int x_local = threadIdx.x;
+    int y_local = threadIdx.y;
+
     int x_up_local, x_down_local, x_up_global, x_down_global;
     int y_left_local, y_right_local, y_left_global, y_right_global;
     int up_index, down_index, left_index, right_index;
@@ -267,7 +269,7 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             x_down_local = NULL;
 
             // If the downwards neighbor is out of bounds of the global grid ...
-            if ( ( global_x + 1 ) > ( length - 1 ) )
+            if ( ( x_global + 1 ) > ( length - 1 ) )
             {
                 // Wrap around to the first row of the global grid.
                 x_down_global = 0;
@@ -308,7 +310,7 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             y_left_local = NULL;
 
             // If the leftwards neighbor is out of bounds of the global grid ...
-            if ( ( global_y - 1 ) < 0 )
+            if ( ( y_global - 1 ) < 0 )
             {
                 // Wrap around to the last column in the global grid.
                 y_left_global = y_global - 1;
@@ -583,7 +585,7 @@ int main( int argc, char *argv[] )
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
+        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(float) * blockwidth * blockwidth >>>
             ( d_grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );

@@ -200,8 +200,8 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 }
 
 __global__
-void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, float q,
-                            float r, float m, float *x1_grid, float *r1_grid )
+void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
+                                float q, float r, float m, float *x1_grid, float *r1_grid )
 {
     // Compute the global location of the active thread.
     int x_global = blockIdx.x * blockDim.x + threadIdx.x;
@@ -217,12 +217,13 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
     // Wait for all threads to finish.
     __syncthreads();
 
+    int x_local, y_local;
     int x_up_local, x_down_local, x_up_global, x_down_global;
     int y_left_local, y_right_local, y_left_global, y_right_global;
     int up_index, down_index, left_index, right_index;
 
     // If the thread is within the bounds of the grid ...
-    if ( ( global_x < length ) && ( global_y < length ) )
+    if ( ( x_global < length ) && ( y_global < length ) )
     {
         // Compute local neighboring indices.
 
@@ -587,7 +588,7 @@ int main( int argc, char *argv[] )
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
-        print_grid( grid, length, t );
+        // print_grid( grid, length, t );
     }
 
 

@@ -230,7 +230,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
     float up_index_energy, down_index_energy, left_index_energy, right_index_energy;
 
-    float energy_old, energy_new, y, x1, r1;
+    // float energy_old, energy_new, y, x1, r1;
+    float energy_old, energy_new, y, r1;
     bool change;
 
     // If the thread is within the bounds of the grid ...
@@ -438,89 +439,89 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
 }
 
-void update_grid( int *grid, int length, float J, float beta, float a, float q,
-                        float r, float m, float *x1_grid, float *r1_grid )
-{
-    int i, j, i_up, i_down, j_left, j_right;
-    int index, up_index, down_index, left_index, right_index;
-    float energy_old, energy_new, y, r1;
-    bool change;
-
-    for ( i = 0; i < length; i++ )
-    {
-        for ( j = 0; j < length; j++ )
-        {
-            index = ( length * i ) + j;
-
-            if ( i == 0 )
-            {
-                i_up = 1;
-                i_down = length - 1;
-            }
-            else if ( i == length - 1)
-            {
-                i_up = 0;
-                i_down = i - 1;
-            }
-            else
-            {
-                i_up = i + 1;
-                i_down = i - 1;
-            }
-            if ( j == 0 )
-            {
-                j_left = length - 1;
-                j_right = 1;
-            }
-            else if ( j == length - 1)
-            {
-                j_left = j - 1;
-                j_right = 0;
-            }
-            else
-            {
-                j_left = j - 1;
-                j_right = j + 1;
-            }
-
-            up_index    = ( length * i_up )   + j;
-            down_index  = ( length * i_down ) + j;
-            left_index  = ( length * i )      + j_left;
-            right_index = ( length * i )      + j_right;
-
-            energy_old = -J * (grid)[ index ] * ( (grid)[ up_index ] + (grid)[ down_index ]
-                + (grid)[ left_index ] + (grid)[ right_index ] );
-
-            energy_new = - energy_old;
-
-            if ( energy_new <= energy_old )
-            {
-                change = true;
-            }
-            else
-            {
-                y = exp( -beta * ( energy_new - energy_old ) );
-                accept_reject( y, a, q, r, m, x1_grid, r1_grid, index );
-
-                r1 = r1_grid[ index ];
-
-                if ( r1 <= y )
-                {
-                    change = true;
-                }
-                else
-                {
-                    change = false;
-                }
-            }
-
-            if ( change == true )
-            {
-                (grid)[ index ] = -(grid)[ index ];
-            }
-        }
-    }
-}
+// void update_grid( int *grid, int length, float J, float beta, float a, float q,
+//                         float r, float m, float *x1_grid, float *r1_grid )
+// {
+//     int i, j, i_up, i_down, j_left, j_right;
+//     int index, up_index, down_index, left_index, right_index;
+//     float energy_old, energy_new, y, r1;
+//     bool change;
+//
+//     for ( i = 0; i < length; i++ )
+//     {
+//         for ( j = 0; j < length; j++ )
+//         {
+//             index = ( length * i ) + j;
+//
+//             if ( i == 0 )
+//             {
+//                 i_up = 1;
+//                 i_down = length - 1;
+//             }
+//             else if ( i == length - 1)
+//             {
+//                 i_up = 0;
+//                 i_down = i - 1;
+//             }
+//             else
+//             {
+//                 i_up = i + 1;
+//                 i_down = i - 1;
+//             }
+//             if ( j == 0 )
+//             {
+//                 j_left = length - 1;
+//                 j_right = 1;
+//             }
+//             else if ( j == length - 1)
+//             {
+//                 j_left = j - 1;
+//                 j_right = 0;
+//             }
+//             else
+//             {
+//                 j_left = j - 1;
+//                 j_right = j + 1;
+//             }
+//
+//             up_index    = ( length * i_up )   + j;
+//             down_index  = ( length * i_down ) + j;
+//             left_index  = ( length * i )      + j_left;
+//             right_index = ( length * i )      + j_right;
+//
+//             energy_old = -J * (grid)[ index ] * ( (grid)[ up_index ] + (grid)[ down_index ]
+//                 + (grid)[ left_index ] + (grid)[ right_index ] );
+//
+//             energy_new = - energy_old;
+//
+//             if ( energy_new <= energy_old )
+//             {
+//                 change = true;
+//             }
+//             else
+//             {
+//                 y = exp( -beta * ( energy_new - energy_old ) );
+//                 accept_reject( y, a, q, r, m, x1_grid, r1_grid, index );
+//
+//                 r1 = r1_grid[ index ];
+//
+//                 if ( r1 <= y )
+//                 {
+//                     change = true;
+//                 }
+//                 else
+//                 {
+//                     change = false;
+//                 }
+//             }
+//
+//             if ( change == true )
+//             {
+//                 (grid)[ index ] = -(grid)[ index ];
+//             }
+//         }
+//     }
+// }
 
 
 

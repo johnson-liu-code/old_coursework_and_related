@@ -226,7 +226,7 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
 }
 
 void update_grid( int *grid, int length, float J, float beta, float a, float q,
-                        float r, float m, int *ij_grid, float *x1_grid, float *r1_grid )
+                        float r, float m, float *x1_grid, float *r1_grid )
 {
     int i, j, i_up, i_down, j_left, j_right;
     int index, up_index, down_index, left_index, right_index;

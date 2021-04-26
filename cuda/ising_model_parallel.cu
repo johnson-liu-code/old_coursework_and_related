@@ -201,9 +201,11 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
 __global__
 void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, float q,
-                            float r, float m, int *ij, float *x1_grid, float *r1_grid,
-                            int blockwidth )
+                            float r, float m, float *x1_grid, float *r1_grid )
 {
+
+    int up_index, down_index, left_index, right_index;
+
     // Compute the global location of the active thread.
     int global_id_x = blockIdx.x * blockDim.x + threadIdx.x;
     int global_id_y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -212,15 +214,237 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
     extern __shared__ int shared[];
 
     // Populate the shared data array.
-    shared[ threadIdx.x * blockwidth + threadIdx.y ] =
-        (grid)[ global_id_x * length + global_id_y ];
+    shared[ ( blockDim.y * threadIdx.x ) + threadIdx.y ] =
+        (grid)[ ( length * global_id_x ) + global_id_y ];
 
     // Wait for all threads to finish.
     __syncthreads();
 
-    if ( ( global_id_x < length ) && ( global_id_y < length ) )
+    // If the thread is within the bounds of the grid ...
+    if ( ( global_x < length ) && ( global_y < length ) )
     {
+        // Compute local neighboring indices.
 
+        // If the thread is in the first row of threads in the local grid ...
+        if ( threadIdx.x == 0 )
+        {
+            // There is no local memory going upwards.
+            x_up_local = NULL;
+
+            // If the upward neighbor is out of bounds of the global grid ...
+            if ( ( global_x - 1 ) < 0 )
+            {
+                // Wrap around to the last row in the global grid.
+                x_up_global = global_x - 1;
+            }
+            // Otherwise ...
+            else
+            {
+                // Access the memory in the global grid one row above.
+                x_up_global = global_x - 1;
+            }
+
+            // The downward neighbor is always at row 1 in the local grid.
+            x_down_local = 1;
+            // The downward global memory does not need to be accessed.
+            x_down_global = NULL;
+
+            up_index   = (grid)[   length     * x_up_global  + y_global ];
+            down_index = (shared)[ blockDim.y * x_down_local + y_local  ];
+
+        }
+        // Else if the thread is in the last row of threads in the local grid ...
+        else if ( threadIdx.x == ( blockDim.x - 1 ) )
+        {
+            // The upwards neighbor is in the row above in the local grid.
+            x_up_local = blockDim.x - 2;
+            // The global memory does not need to be accessed.
+            x_up_global = NULL;
+
+            // There is no local memory going downwards.
+            x_down_local = NULL;
+
+            // If the downwards neighbor is out of bounds of the global grid ...
+            if ( ( global_x + 1 ) > ( length - 1 ) )
+            {
+                // Wrap around to the first row of the global grid.
+                x_down_global = 0;
+            }
+            // Otherwise ...
+            else
+            {
+                // Access the memory in the global grid one row below.
+                x_down_global = global_x + 1;
+            }
+
+            up_index   = (shared)[ blockDim.y * x_up_local    + y_local  ];
+            down_index = (grid)[   length     * x_down_global + y_global ];
+
+        }
+        // Else if the thread is neither in the first row nor the last row of the
+        //  local grid.
+        else
+        {
+            // The upwards neighbor is in the row above in the local grid.
+            x_up_local = threadIdx.x - 1;
+            // The global memory does not need to be accessed.
+            x_up_global = NULL;
+
+            // The downwards neighbor is in the row below in the local grid.
+            x_down_local = threadIdx.x + 1;
+            // The global memory does not need to be accessed.
+            x_down_global = NULL;
+
+            up_index   = (shared)[ blockDim.y * x_up_local   + y_local ];
+            down_index = (shared)[ blockDim.y * x_down_local + y_local ];
+        }
+
+        // If the thread is in the first column of threads in the local grid ...
+        if ( threadIdx.y == 0 )
+        {
+            // There is no local memory going leftwards.
+            y_left_local = NULL;
+
+            // If the leftwards neighbor is out of bounds of the global grid ...
+            if ( ( global_y - 1 ) < 0 )
+            {
+                // Wrap around to the last column in the global grid.
+                y_left_global = global_y - 1;
+            }
+            // Otherwise ...
+            else
+            {
+                // Access the memory in the global grid one column to the left.
+                y_left_global = global_y - 1;
+            }
+
+            // The rightwards neighbor is always at column 1 in the local grid.
+            y_right_local = 1;
+            // The global memory does not need to be accessed.
+            y_right_global = NULL;
+
+            left_index  = (grid)[   length     * x_global + y_left_global ];
+            right_index = (shared)[ blockDim.y * x_local  + y_right_local ];
+        }
+        // Else if the thread is in the last column of threads in the local grid ...
+        else if ( threadIdx.y == ( blockDim.y - 1 ) )
+        {
+            // The leftwards neighbor is in the column to the left in the local grid.
+            y_left_local = blockDim.y - 2;
+            // The global memory does not need to be accessed.
+            y_left_global = NULL;
+
+            // There is no local memory going rightwards.
+            y_right_local = NULL;
+
+            // If the rightwards neighbor is out of bounds of the global grid ...
+            if ( ( global_y + 1 ) > ( length - 1 ) )
+            {
+                // Wrap around to the first column of the global grid.
+                y_right_global = 0;
+            }
+            // Otherwise ...
+            else
+            {
+                // Access the memory in the global grid one column to the right.
+                y_right_global = global_y + 1;
+            }
+
+            left_index  = (shared)[ blockDim.y * x_local  + y_left_local   ];
+            right_index = (grid)[   length     * x_global + y_right_global ];
+
+        }
+        // Else if the thread is neither in the first column nor the last column
+        //  of the local grid.
+        else
+        {
+            // The leftwards neighbor is in the column to the left in the local grid.
+            y_left_local = threadIdx.y - 1;
+            // The global memory does not need to be accessed.
+            y_left_global = NULL;
+
+            // The rightwards neighbor is in the column to the right in the local grid.
+            y_right_local = threadIdx.y + 1;
+            // The global memory does not need to be accessed.
+            y_right_global = NULL;
+
+            left_index  = (shared)[ blockDim.y * x_local + y_left_local  ];
+            right_index = (shared)[ blockDim.y * x_local + y_right_local ];
+        }
+
+
+        // if ( x_up_local == NULL )
+        // {
+        //     if ( y_left_local == NULL )
+        //     {
+        //         up_index =
+        //     }
+        //     else if ( y_right_local == NULL )
+        //     {
+        //
+        //     }
+        //     else
+        //     {
+        //
+        //     }
+        // }
+        // else if ( x_down_local == NULL )
+        // {
+        //
+        // }
+        // else
+        // {
+        //
+        // }
+
+
+
+        // if ( threadIdx.x == 0 )
+        // {
+        //     x_up = global_x - 1;
+        //     if ( ( global_x - 1 ) < 0 )
+        //     {
+        //         x_up = length - 1;
+        //     }
+        //     x_down = 1;
+        // }
+
+
+        // if ( global_x == 0 )
+        // {
+        //     global_x_up = 1;
+        //     global_x_down = length - 1;
+        // }
+        // else if ( global_x == length - 1)
+        // {
+        //     global_x_up = 0;
+        //     global_x_down = global_x - 1;
+        // }
+        // else
+        // {
+        //     global_x_up = global_x + 1;
+        //     global_x_down = global_x - 1;
+        // }
+        // if ( global_y == 0 )
+        // {
+        //     global_y_left = length - 1;
+        //     global_y_right = 1;
+        // }
+        // else if ( global_y == length - 1)
+        // {
+        //     global_y_left = global_y - 1;
+        //     global_y_right = 0;
+        // }
+        // else
+        // {
+        //     global_y_left = global_y - 1;
+        //     global_y_right = global_y + 1;
+        // }
+        //
+        // up_index    = ( length * global_x_up )   + global_y;
+        // down_index  = ( length * global_x_down ) + global_y;
+        // left_index  = ( length * global_x )      + global_y_left;
+        // right_index = ( length * global_x )      + global_y_right;
     }
 
 }
@@ -233,15 +457,11 @@ void update_grid( int *grid, int length, float J, float beta, float a, float q,
     float energy_old, energy_new, y, r1;
     bool change;
 
-    // int *ij;
-    // ij = (int *)malloc( sizeof(int) * 4 );
-
     for ( i = 0; i < length; i++ )
     {
         for ( j = 0; j < length; j++ )
         {
             index = ( length * i ) + j;
-            // determine_ij( i, j, length, ij );
 
             if ( i == 0 )
             {

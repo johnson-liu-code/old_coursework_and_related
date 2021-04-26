@@ -574,7 +574,7 @@ int main( int argc, char *argv[] )
     int *h_grid;
     h_grid = (int *)malloc( sizeof(int) * size );
 
-    float *d_grid;
+    int *d_grid;
     cudaMalloc( (void **)&d_grid, sizeof(int) * length * length );
 
     initialize_x1_grid( a, q, r, m, x1_grid, length );
@@ -585,7 +585,7 @@ int main( int argc, char *argv[] )
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(float) * blockwidth * blockwidth >>>
+        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
             ( d_grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );

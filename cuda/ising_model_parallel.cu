@@ -203,22 +203,23 @@ __global__
 void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, float q,
                             float r, float m, float *x1_grid, float *r1_grid )
 {
-
-    int up_index, down_index, left_index, right_index;
-
     // Compute the global location of the active thread.
-    int global_id_x = blockIdx.x * blockDim.x + threadIdx.x;
-    int global_id_y = blockIdx.y * blockDim.y + threadIdx.y;
+    int global_x = blockIdx.x * blockDim.x + threadIdx.x;
+    int global_y = blockIdx.y * blockDim.y + threadIdx.y;
 
     // Declare shared data.
     extern __shared__ int shared[];
 
     // Populate the shared data array.
     shared[ ( blockDim.y * threadIdx.x ) + threadIdx.y ] =
-        (grid)[ ( length * global_id_x ) + global_id_y ];
+        (grid)[ ( length * global_x ) + global_y ];
 
     // Wait for all threads to finish.
     __syncthreads();
+
+    int x_up_local, x_down_local, x_up_global, x_down_global;
+    int y_left_local, y_right_local, y_left_global, y_right_global;
+    int up_index, down_index, left_index, right_index;
 
     // If the thread is within the bounds of the grid ...
     if ( ( global_x < length ) && ( global_y < length ) )
@@ -556,7 +557,7 @@ int main( int argc, char *argv[] )
     // The number of threads in the x, y, and z directions of a thread block.
     dim3 dimBlock( blockwidth, blockwidth, 1 );
 
-    int *grid;
+    int *h_grid;
     grid = (int *)malloc( sizeof(int) * size );
     float *x1_grid;
     x1_grid = (float *)malloc( sizeof(float) * size );
@@ -569,13 +570,22 @@ int main( int argc, char *argv[] )
     float q = m / a;
     float r = fmod( m, a );
 
+    float *d_grid;
+    cudaMalloc( (void **)&d_grid, sizeof(int) * length * length );
+
     initialize_x1_grid( a, q, r, m, x1_grid, length );
-    initialize_grid( grid, length );
-    print_grid( grid, length, 0 );
+    initialize_grid( h_grid, length );
+    // print_grid( h_grid, length, 0 );
+
+    cudaMemcpy( d_grid, h_grid, sizeof(int) * size, cudaMemcpyHostToDevice );
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+        GPUKernel_Convolution<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
+            ( d_grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+
+        // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+
         print_grid( grid, length, t );
     }
 

@@ -80,6 +80,8 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
     {
         for ( j = 0; j < length; j++ )
         {
+            index = length * i + j;
+
             x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
             if ( x1 < 0 )
@@ -194,7 +196,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
     float r1 = x1 / m;
 
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
     // x1r1[0] = x1;
     // x1r1[1] = r1;

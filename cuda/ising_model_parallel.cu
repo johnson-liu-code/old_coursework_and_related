@@ -433,23 +433,9 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             y = exp( -beta * ( energy_new - energy_old ) );
             accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
-            // x1 = d_x1_grid[ index_global ];
-            //
-            // x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
-            //
-            // if ( x1 < 0 )
-            // {
-            //     x1 += m;
-            // }
-            //
-            // r1 = x1 / m;
-
-            // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
-
-            // d_x1_grid[ index_global ] = x1;
-            // d_r1_grid[ index_global ] = r1;
-
             r1 = d_r1_grid[ index_global ];
+
+            std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
             if ( r1 <= y )
             {
@@ -610,31 +596,31 @@ int main( int argc, char *argv[] )
 
     print_x1_grid( h_x1_grid, length, 0 );
 
-    float *d2h_x1_grid;
-    d2h_x1_grid = (float *)malloc( sizeof(float) * size );
+    // float *d2h_x1_grid;
+    // d2h_x1_grid = (float *)malloc( sizeof(float) * size );
 
-    cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+    // cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
 
-    print_x1_grid( d2h_x1_grid, length, 1);
+    // print_x1_grid( d2h_x1_grid, length, 1);
 
-    // for ( int t = 1; t < trajecs; t++ )
-    // {
-    //     GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
-    //         ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid );
-    //     cudaDeviceSynchronize();
-    //
-    //     // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
-    //
-    //     cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-    //
-    //     print_grid( h_grid, length, t );
-    //
-    //     // print_grid( grid, length, t );
-    // }
+    for ( int t = 1; t < trajecs; t++ )
+    {
+        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
+            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid );
+        cudaDeviceSynchronize();
 
-    // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
-    // print_grid( h_grid, length, 0 );
+        cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+
+        print_grid( h_grid, length, t );
+
+        // print_grid( grid, length, t );
+    }
+
+    cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+
+    print_grid( h_grid, length, 0 );
 
 
 

@@ -71,7 +71,7 @@ void initialize_lattice( int *grid, int length )
     }
 }
 
-void initialize_x1_grid( float *x1_grid, int length )
+void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int length )
 {
     int i, j, index;
     float x1 = pow( 5.5, 13 );
@@ -277,22 +277,22 @@ int main( int argc, char *argv[] )
 
     int blockwidth = std::stoi( argv[5] );
     // The number of thread blocks in the x, y, and z directions.
-    dim3 dimGrid( im_width/blockwidth, im_height/blockwidth, 1 );
+    dim3 dimGrid( length/blockwidth, length/blockwidth, 1 );
     // The number of threads in the x, y, and z directions of a thread block.
     dim3 dimBlock( blockwidth, blockwidth, 1 );
 
     int *grid;
     grid = (int *)malloc( sizeof(int) * size );
     float *x1_grid;
-    grid = (float *)malloc( sizeof(float) * size );
+    x1_grid = (float *)malloc( sizeof(float) * size );
     float *r1_grid;
-    grid = (float *)malloc( sizeof(float) * size );
+    r1_grid = (float *)malloc( sizeof(float) * size );
 
     int *ij;
     ij = (int *)malloc( sizeof(int) * 4 );
 
-    float *x1r1;
-    x1r1 = (float *)malloc( sizeof(float) * 2 );
+    // float *x1r1;
+    // x1r1 = (float *)malloc( sizeof(float) * 2 );
 
     float a = pow( 7., 5 );
     float m = pow( 2., 31 ) - 1.;
@@ -303,7 +303,7 @@ int main( int argc, char *argv[] )
     // float x1 = pow( 5.5, 13 );
     // x1r1[0] = x1;
 
-    initialize_x1_grid( x1_grid, length );
+    initialize_x1_grid( float a, float q, float r, float m, x1_grid, length );
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );
 

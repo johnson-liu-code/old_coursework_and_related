@@ -87,7 +87,7 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
                 x1 += m;
             }
 
-            std::cout << "x1: " << x1 << std::endl;
+            // std::cout << "x1: " << x1 << std::endl;
 
             x1_grid[ index ] = x1;
         }
@@ -194,6 +194,8 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
     float r1 = x1 / m;
 
+    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+
     // x1r1[0] = x1;
     // x1r1[1] = r1;
     x1_grid[ index ] = x1;
@@ -241,7 +243,7 @@ void update_lattice( int *grid, int length, float J, float beta, float a, float 
                 // r1 = x1r1[1];
                 r1 = r1_grid[ index ];
 
-                std::cout << "y: " << y << ", r1: " << r1 << std::endl;
+                // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
 
                 if ( r1 <= y )
                 {

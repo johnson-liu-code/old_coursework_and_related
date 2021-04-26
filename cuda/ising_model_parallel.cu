@@ -202,9 +202,8 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
 // void update_lattice( int *grid, int length, float J, float beta, float x1,
 //                         float a, float q, float r, float m, int *ij, float *x1r1 )
-void update_lattice( int *grid, int length, float J, float beta, float x1,
-                        float a, float q, float r, float m, int *ij,
-                        float *x1_grid, float *r1_grid )
+void update_lattice( int *grid, int length, float J, float beta, float a, float q,
+                        float r, float m, int *ij, float *x1_grid, float *r1_grid )
 {
     int i, j, index, up_index, down_index, left_index, right_index;
     float energy_old, energy_new, y, r1;
@@ -303,14 +302,14 @@ int main( int argc, char *argv[] )
     // float x1 = pow( 5.5, 13 );
     // x1r1[0] = x1;
 
-    initialize_x1_grid( float a, float q, float r, float m, x1_grid, length );
+    initialize_x1_grid( a, q, r, m, x1_grid, length );
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );
 
     for ( int t = 1; t < trajecs; t++ )
     {
         // update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
-        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1_grid, r1_grid );
+        update_lattice( grid, length, J, beta, a, q, r, m, ij, x1_grid, r1_grid );
         print_lattice( grid, length, t );
     }
 

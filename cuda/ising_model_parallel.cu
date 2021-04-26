@@ -48,7 +48,7 @@ Output: ------------------------------------------------------------------------
 // =====================================================================================================
 
 
-void initialize_lattice( int *grid, int length )
+void initialize_grid( int *grid, int length )
 {
     int i, j, index;
     float r;
@@ -89,14 +89,12 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
                 x1 += m;
             }
 
-            // std::cout << "x1: " << x1 << std::endl;
-
             x1_grid[ index ] = x1;
         }
     }
 }
 
-void print_lattice( int *grid, int length, int t )
+void print_grid( int *grid, int length, int t )
 {
     int i, j, index, spin;
 
@@ -136,6 +134,24 @@ void print_lattice( int *grid, int length, int t )
     }
 
     outfile.close();
+}
+
+void initialize_ij_grid( int *ij_grid, int length )
+{
+    int *ij;
+    ij = (int *)malloc( sizeof(int) * 4 );
+
+    int i, j, index;
+
+    for ( i = 0; i < length, i++ )
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            index = length * i + j;
+            determine_ij( i, j, length, ij);
+            ij_grid[ index ] = ij;
+        }
+    }
 }
 
 void determine_ij( int i, int j, int length, int *ij )
@@ -179,12 +195,9 @@ void determine_ij( int i, int j, int length, int *ij )
     ij[3] = j_right;
 }
 
-// void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
                     float *r1_grid, int index )
 {
-
-    // float x1 = x1r1[0];
     float x1 = x1_grid[ index ];
 
     x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
@@ -198,34 +211,57 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
     // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
-    // x1r1[0] = x1;
-    // x1r1[1] = r1;
     x1_grid[ index ] = x1;
     r1_grid[ index ] = r1;
 }
 
+__global__
+void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, float q,
+                            float r, float m, int *ij, float *x1_grid, float *r1_grid,
+                            int blockwidth )
+{
+    // Compute the global location of the active thread.
+    int global_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+    int global_id_y = blockIdx.y * blockDim.y + threadIdx.y;
 
+    // Declare shared data.
+    extern __shared__ int shared[];
 
-// void update_lattice( int *grid, int length, float J, float beta, float x1,
-//                         float a, float q, float r, float m, int *ij, float *x1r1 )
-void update_lattice( int *grid, int length, float J, float beta, float a, float q,
-                        float r, float m, int *ij, float *x1_grid, float *r1_grid )
+    // Populate the shared data array.
+    shared[ threadIdx.x * blockwidth + threadIdx.y ] =
+        (grid)[ global_id_x * length + global_id_y ];
+
+    // Wait for all threads to finish.
+    __syncthreads();
+
+    if ( ( global_id_x < length ) && ( global_id_y < length ) )
+    {
+
+    }
+
+}
+
+void update_grid( int *grid, int length, float J, float beta, float a, float q,
+                        float r, float m, int *ij_grid, float *x1_grid, float *r1_grid )
 {
     int i, j, index, up_index, down_index, left_index, right_index;
     float energy_old, energy_new, y, r1;
     bool change;
+
+    int *ij;
+    ij = (int *)malloc( sizeof(int) * 4 );
 
     for ( i = 0; i < length; i++ )
     {
         for ( j = 0; j < length; j++ )
         {
             index = length * i + j;
-            determine_ij( i, j, length, ij );
+            // determine_ij( i, j, length, ij );
 
-            up_index    = length * ij[0] + j;
-            down_index  = length * ij[1] + j;
-            left_index  = length * i + ij[2];
-            right_index = length * i + ij[3];
+            up_index    = length * ij_grid[ index ][0] + j;
+            down_index  = length * ij_grid[ index ][1] + j;
+            left_index  = length * i + ij_grid[ index ][2];
+            right_index = length * i + ij_grid[ index ][3];
 
             energy_old = -J * (grid)[ index ] * ( (grid)[ up_index ] + (grid)[ down_index ]
                 + (grid)[ left_index ] + (grid)[ right_index ] );
@@ -239,10 +275,8 @@ void update_lattice( int *grid, int length, float J, float beta, float a, float 
             else
             {
                 y = exp( -beta * ( energy_new - energy_old ) );
-                // accept_reject( y, a, q, r, m, x1r1 );
                 accept_reject( y, a, q, r, m, x1_grid, r1_grid, index );
 
-                // r1 = x1r1[1];
                 r1 = r1_grid[ index ];
 
                 // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
@@ -298,8 +332,8 @@ int main( int argc, char *argv[] )
     int *ij;
     ij = (int *)malloc( sizeof(int) * 4 );
 
-    // float *x1r1;
-    // x1r1 = (float *)malloc( sizeof(float) * 2 );
+    int *ij_grid;
+    ij_grid = (int *)malloc( sizeof(int) * 4 * size );
 
     float a = pow( 7., 5 );
     float m = pow( 2., 31 ) - 1.;
@@ -307,20 +341,15 @@ int main( int argc, char *argv[] )
     float q = m / a;
     float r = fmod( m, a );
 
-    // float x1 = pow( 5.5, 13 );
-    // x1r1[0] = x1;
-
+    initialize_ij_grid( ij_grid, length );
     initialize_x1_grid( a, q, r, m, x1_grid, length );
-
-
-    initialize_lattice( grid, length );
-    print_lattice( grid, length, 0 );
+    initialize_grid( grid, length );
+    print_grid( grid, length, 0 );
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        // update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
-        update_lattice( grid, length, J, beta, a, q, r, m, ij, x1_grid, r1_grid );
-        print_lattice( grid, length, t );
+        update_grid( grid, length, J, beta, a, q, r, m, ij, x1_grid, r1_grid );
+        print_grid( grid, length, t );
     }
 
 

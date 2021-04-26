@@ -87,6 +87,8 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
                 x1 += m;
             }
 
+            std::cout << "x1: " << x1 << std::endl;
+
             x1_grid[ index ] = x1;
         }
     }
@@ -305,6 +307,8 @@ int main( int argc, char *argv[] )
     // x1r1[0] = x1;
 
     initialize_x1_grid( a, q, r, m, x1_grid, length );
+
+
     initialize_lattice( grid, length );
     print_lattice( grid, length, 0 );
 

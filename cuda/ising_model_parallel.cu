@@ -396,7 +396,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             y = exp( -beta * ( energy_new - energy_old ) );
-            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index );
+            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
             r1 = d_r1_grid[ index_global ];
 
@@ -542,7 +542,7 @@ int main( int argc, char *argv[] )
     float *h_x1_grid;
     h_x1_grid = (float *)malloc( sizeof(float) * size );
     float *d_x1_grid;
-    cudaMalloc( (void **)&d_grid, sizeof(float) * size );
+    cudaMalloc( (void **)&d_x1_grid, sizeof(float) * size );
 
     float *h_r1_grid;
     h_r1_grid = (float *)malloc( sizeof(float) * size );

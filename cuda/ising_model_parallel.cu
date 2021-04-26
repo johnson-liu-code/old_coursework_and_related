@@ -48,7 +48,7 @@ Output: ------------------------------------------------------------------------
 // =====================================================================================================
 
 
-void initialize_lattice( int *grid, int length )
+void initialize_grid( int *grid, int length )
 {
     int i, j, index;
     float r;
@@ -80,6 +80,8 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
     {
         for ( j = 0; j < length; j++ )
         {
+            index = length * i + j;
+
             x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
             if ( x1 < 0 )
@@ -94,7 +96,7 @@ void initialize_x1_grid( float a, float q, float r, float m, float *x1_grid, int
     }
 }
 
-void print_lattice( int *grid, int length, int t )
+void print_grid( int *grid, int length, int t )
 {
     int i, j, index, spin;
 
@@ -190,17 +192,49 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
     }
 
     float r1 = x1 / m;
+
+    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+
     x1_grid[ index ] = x1;
     r1_grid[ index ] = r1;
 }
 
-void update_lattice( int *grid, int length, float J, float beta, float a, float q,
-                        float r, float m, float *x1_grid, float *r1_grid )
+__global__
+void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, float q,
+                            float r, float m, int *ij, float *x1_grid, float *r1_grid,
+                            int blockwidth )
+{
+    // Compute the global location of the active thread.
+    int global_id_x = blockIdx.x * blockDim.x + threadIdx.x;
+    int global_id_y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // Declare shared data.
+    extern __shared__ int shared[];
+
+    // Populate the shared data array.
+    shared[ threadIdx.x * blockwidth + threadIdx.y ] =
+        (grid)[ global_id_x * length + global_id_y ];
+
+    // Wait for all threads to finish.
+    __syncthreads();
+
+    if ( ( global_id_x < length ) && ( global_id_y < length ) )
+    {
+
+    }
+
+}
+
+void update_grid( int *grid, int length, float J, float beta, float a, float q,
+                        float r, float m, int *ij_grid, float *x1_grid, float *r1_grid )
 {
     int i, j, i_up, i_down, j_left, j_right;
     int index, up_index, down_index, left_index, right_index;
     float energy_old, energy_new, y, r1;
     bool change;
+
+    // int *ij;
+    // ij = (int *)malloc( sizeof(int) * 4 );
 
     for ( i = 0; i < length; i++ )
     {

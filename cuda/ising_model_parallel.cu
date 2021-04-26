@@ -411,7 +411,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
-            d_x1_grid[ index_gloabl ] = x1;
+            d_x1_grid[ index_global ] = x1;
             d_r1_grid[ index_global ] = r1;
 
             // r1 = d_r1_grid[ index_global ];

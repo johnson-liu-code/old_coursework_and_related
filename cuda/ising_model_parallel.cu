@@ -138,6 +138,39 @@ void print_grid( int *grid, int length, int t )
     outfile.close();
 }
 
+void print_x1_grid( float *x1_grid, int length, int t )
+{
+    int i, j, index, x1;
+
+    int n_zero = 5;
+    std::string num_string = std::to_string( t );
+
+    int string_length = num_string.length();
+
+    for ( int k = 0; k < n_zero - string_length; k++ )
+    {
+        num_string = "0" + num_string;
+    }
+
+    std::string filename = "x1_grid_t_" + num_string + ".out";
+    std::ofstream outfile ( filename );
+
+    for ( i = 0; i < length; i++)
+    {
+        for ( j = 0; j < length; j++ )
+        {
+            index = ( length * i ) + j;
+            x1 = (x1_grid)[ index ];
+
+            outfile << x1 << ", ";
+        }
+        // std::cout << std::endl;
+        outfile << std::endl;
+    }
+
+    outfile.close();
+}
+
 void determine_ij( int i, int j, int length, int *ij )
 {
     int i_up, i_down, j_left, j_right;
@@ -575,14 +608,14 @@ int main( int argc, char *argv[] )
     cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
     cudaMemcpy( d_r1_grid, h_r1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
 
-    print_grid( h_x1_grid, length, 0 );
+    print_x1_grid( h_x1_grid, length, 0 );
 
     float *d2h_x1_grid;
     d2h_x1_grid = (float *)malloc( sizeof(float) * size );
 
     cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
 
-    print_grid( d2h_x1_grid, length, 1);
+    print_x1_grid( d2h_x1_grid, length, 1);
 
     // for ( int t = 1; t < trajecs; t++ )
     // {

@@ -342,7 +342,7 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             y_right_local = NULL;
 
             // If the rightwards neighbor is out of bounds of the global grid ...
-            if ( ( global_y + 1 ) > ( length - 1 ) )
+            if ( ( y_global + 1 ) > ( length - 1 ) )
             {
                 // Wrap around to the first column of the global grid.
                 y_right_global = 0;

@@ -204,15 +204,15 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
                             float r, float m, float *x1_grid, float *r1_grid )
 {
     // Compute the global location of the active thread.
-    int global_x = blockIdx.x * blockDim.x + threadIdx.x;
-    int global_y = blockIdx.y * blockDim.y + threadIdx.y;
+    int x_global = blockIdx.x * blockDim.x + threadIdx.x;
+    int y_global = blockIdx.y * blockDim.y + threadIdx.y;
 
     // Declare shared data.
     extern __shared__ int shared[];
 
     // Populate the shared data array.
     shared[ ( blockDim.y * threadIdx.x ) + threadIdx.y ] =
-        (grid)[ ( length * global_x ) + global_y ];
+        (grid)[ ( length * x_global ) + y_global ];
 
     // Wait for all threads to finish.
     __syncthreads();
@@ -233,16 +233,16 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
             x_up_local = NULL;
 
             // If the upward neighbor is out of bounds of the global grid ...
-            if ( ( global_x - 1 ) < 0 )
+            if ( ( x_global - 1 ) < 0 )
             {
                 // Wrap around to the last row in the global grid.
-                x_up_global = global_x - 1;
+                x_up_global = x_global - 1;
             }
             // Otherwise ...
             else
             {
                 // Access the memory in the global grid one row above.
-                x_up_global = global_x - 1;
+                x_up_global = x_global - 1;
             }
 
             // The downward neighbor is always at row 1 in the local grid.
@@ -275,7 +275,7 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
             else
             {
                 // Access the memory in the global grid one row below.
-                x_down_global = global_x + 1;
+                x_down_global = x_global + 1;
             }
 
             up_index   = (shared)[ blockDim.y * x_up_local    + y_local  ];
@@ -310,13 +310,13 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
             if ( ( global_y - 1 ) < 0 )
             {
                 // Wrap around to the last column in the global grid.
-                y_left_global = global_y - 1;
+                y_left_global = y_global - 1;
             }
             // Otherwise ...
             else
             {
                 // Access the memory in the global grid one column to the left.
-                y_left_global = global_y - 1;
+                y_left_global = y_global - 1;
             }
 
             // The rightwards neighbor is always at column 1 in the local grid.
@@ -348,7 +348,7 @@ void GPUKenel_update_grid( int *grid, int length, float J, float beta, float a, 
             else
             {
                 // Access the memory in the global grid one column to the right.
-                y_right_global = global_y + 1;
+                y_right_global = y_global + 1;
             }
 
             left_index  = (shared)[ blockDim.y * x_local  + y_left_local   ];
@@ -557,8 +557,6 @@ int main( int argc, char *argv[] )
     // The number of threads in the x, y, and z directions of a thread block.
     dim3 dimBlock( blockwidth, blockwidth, 1 );
 
-    int *h_grid;
-    grid = (int *)malloc( sizeof(int) * size );
     float *x1_grid;
     x1_grid = (float *)malloc( sizeof(float) * size );
     float *r1_grid;
@@ -569,6 +567,9 @@ int main( int argc, char *argv[] )
 
     float q = m / a;
     float r = fmod( m, a );
+
+    int *h_grid;
+    h_grid = (int *)malloc( sizeof(int) * size );
 
     float *d_grid;
     cudaMalloc( (void **)&d_grid, sizeof(int) * length * length );
@@ -581,7 +582,7 @@ int main( int argc, char *argv[] )
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        GPUKernel_Convolution<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
+        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
             ( d_grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );

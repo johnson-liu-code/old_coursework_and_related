@@ -200,8 +200,9 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 }
 
 __global__
-void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
-                                float q, float r, float m, float *x1_grid, float *r1_grid )
+void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float a,
+                                float q, float r, float m, float *d_x1_grid,
+                                float *d_r1_grid )
 {
     // Compute the global location of the active thread.
     int x_global = blockIdx.x * blockDim.x + threadIdx.x;
@@ -212,7 +213,7 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
 
     // Populate the shared data array.
     shared[ ( blockDim.y * threadIdx.x ) + threadIdx.y ] =
-        (grid)[ ( length * x_global ) + y_global ];
+        (d_grid)[ ( length * x_global ) + y_global ];
 
     // Wait for all threads to finish.
     __syncthreads();
@@ -222,7 +223,11 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
 
     int x_up_local, x_down_local, x_up_global, x_down_global;
     int y_left_local, y_right_local, y_left_global, y_right_global;
-    int up_index, down_index, left_index, right_index;
+
+    float up_index_energy, down_index_energy, left_index_energy, right_index_energy;
+
+    float energy_old, energy_new, y, r1;
+    bool change;
 
     // If the thread is within the bounds of the grid ...
     if ( ( x_global < length ) && ( y_global < length ) )
@@ -253,8 +258,8 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             // The downward global memory does not need to be accessed.
             x_down_global = NULL;
 
-            up_index   = (grid)[   length     * x_up_global  + y_global ];
-            down_index = (shared)[ blockDim.y * x_down_local + y_local  ];
+            up_index_energy   = (grid)[   length     * x_up_global  + y_global ];
+            down_index_energy = (shared)[ blockDim.y * x_down_local + y_local  ];
 
         }
         // Else if the thread is in the last row of threads in the local grid ...
@@ -281,8 +286,8 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
                 x_down_global = x_global + 1;
             }
 
-            up_index   = (shared)[ blockDim.y * x_up_local    + y_local  ];
-            down_index = (grid)[   length     * x_down_global + y_global ];
+            up_index_energy   = (shared)[ blockDim.y * x_up_local    + y_local  ];
+            down_index_energy = (grid)[   length     * x_down_global + y_global ];
 
         }
         // Else if the thread is neither in the first row nor the last row of the
@@ -299,8 +304,8 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             // The global memory does not need to be accessed.
             x_down_global = NULL;
 
-            up_index   = (shared)[ blockDim.y * x_up_local   + y_local ];
-            down_index = (shared)[ blockDim.y * x_down_local + y_local ];
+            up_index_energy   = (shared)[ blockDim.y * x_up_local   + y_local ];
+            down_index_energy = (shared)[ blockDim.y * x_down_local + y_local ];
         }
 
         // If the thread is in the first column of threads in the local grid ...
@@ -327,8 +332,8 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             // The global memory does not need to be accessed.
             y_right_global = NULL;
 
-            left_index  = (grid)[   length     * x_global + y_left_global ];
-            right_index = (shared)[ blockDim.y * x_local  + y_right_local ];
+            left_index_energy  = (grid)[   length     * x_global + y_left_global ];
+            right_index_energy = (shared)[ blockDim.y * x_local  + y_right_local ];
         }
         // Else if the thread is in the last column of threads in the local grid ...
         else if ( threadIdx.y == ( blockDim.y - 1 ) )
@@ -354,8 +359,8 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
                 y_right_global = y_global + 1;
             }
 
-            left_index  = (shared)[ blockDim.y * x_local  + y_left_local   ];
-            right_index = (grid)[   length     * x_global + y_right_global ];
+            left_index_energy  = (shared)[ blockDim.y * x_local  + y_left_local   ];
+            right_index_energy = (grid)[   length     * x_global + y_right_global ];
 
         }
         // Else if the thread is neither in the first column nor the last column
@@ -372,83 +377,43 @@ void GPUKernel_update_grid( int *grid, int length, float J, float beta, float a,
             // The global memory does not need to be accessed.
             y_right_global = NULL;
 
-            left_index  = (shared)[ blockDim.y * x_local + y_left_local  ];
-            right_index = (shared)[ blockDim.y * x_local + y_right_local ];
+            left_index_energy  = (shared)[ blockDim.y * x_local + y_left_local  ];
+            right_index_energy = (shared)[ blockDim.y * x_local + y_right_local ];
+        }
+
+        energy_old = -J * (shared)[ index ] * ( up_index_energy + down_index_energy
+            + left_index_energy + right_index_energy );
+
+        energy_new = - energy_old;
+
+        if ( energy_new <= energy_old )
+        {
+            change = true;
+        }
+        else
+        {
+            y = exp( -beta * ( energy_new - energy_old ) );
+            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index );
+
+            r1 = d_r1_grid[ index ];
+
+            if ( r1 <= y )
+            {
+                change = true;
+            }
+            else
+            {
+                change = false;
+            }
+        }
+
+        if ( change == true )
+        {
+            (d_grid)[ index ] = -(d_grid)[ index ];
         }
 
 
-        // if ( x_up_local == NULL )
-        // {
-        //     if ( y_left_local == NULL )
-        //     {
-        //         up_index =
-        //     }
-        //     else if ( y_right_local == NULL )
-        //     {
-        //
-        //     }
-        //     else
-        //     {
-        //
-        //     }
-        // }
-        // else if ( x_down_local == NULL )
-        // {
-        //
-        // }
-        // else
-        // {
-        //
-        // }
 
-
-
-        // if ( threadIdx.x == 0 )
-        // {
-        //     x_up = global_x - 1;
-        //     if ( ( global_x - 1 ) < 0 )
-        //     {
-        //         x_up = length - 1;
-        //     }
-        //     x_down = 1;
-        // }
-
-
-        // if ( global_x == 0 )
-        // {
-        //     global_x_up = 1;
-        //     global_x_down = length - 1;
-        // }
-        // else if ( global_x == length - 1)
-        // {
-        //     global_x_up = 0;
-        //     global_x_down = global_x - 1;
-        // }
-        // else
-        // {
-        //     global_x_up = global_x + 1;
-        //     global_x_down = global_x - 1;
-        // }
-        // if ( global_y == 0 )
-        // {
-        //     global_y_left = length - 1;
-        //     global_y_right = 1;
-        // }
-        // else if ( global_y == length - 1)
-        // {
-        //     global_y_left = global_y - 1;
-        //     global_y_right = 0;
-        // }
-        // else
-        // {
-        //     global_y_left = global_y - 1;
-        //     global_y_right = global_y + 1;
-        // }
-        //
-        // up_index    = ( length * global_x_up )   + global_y;
-        // down_index  = ( length * global_x_down ) + global_y;
-        // left_index  = ( length * global_x )      + global_y_left;
-        // right_index = ( length * global_x )      + global_y_right;
     }
 
 }
@@ -560,11 +525,6 @@ int main( int argc, char *argv[] )
     // The number of threads in the x, y, and z directions of a thread block.
     dim3 dimBlock( blockwidth, blockwidth, 1 );
 
-    float *x1_grid;
-    x1_grid = (float *)malloc( sizeof(float) * size );
-    float *r1_grid;
-    r1_grid = (float *)malloc( sizeof(float) * size );
-
     float a = pow( 7., 5 );
     float m = pow( 2., 31 ) - 1.;
 
@@ -573,20 +533,31 @@ int main( int argc, char *argv[] )
 
     int *h_grid;
     h_grid = (int *)malloc( sizeof(int) * size );
-
     int *d_grid;
-    cudaMalloc( (void **)&d_grid, sizeof(int) * length * length );
+    cudaMalloc( (void **)&d_grid, sizeof(int) * size );
+
+    float *h_x1_grid;
+    h_x1_grid = (float *)malloc( sizeof(float) * size );
+    float *d_x1_grid;
+    cudaMalloc( (void **)&d_grid, sizeof(float) * size );
+
+    float *h_r1_grid;
+    h_r1_grid = (float *)malloc( sizeof(float) * size );
+    float *d_r1_grid;
+    cudaMalloc( (void **)&d_r1_grid, sizeof(float) * size );
 
     initialize_x1_grid( a, q, r, m, x1_grid, length );
     initialize_grid( h_grid, length );
     // print_grid( h_grid, length, 0 );
 
     cudaMemcpy( d_grid, h_grid, sizeof(int) * size, cudaMemcpyHostToDevice );
+    cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
+    cudaMemcpy( d_r1_grid, h_r1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
 
     for ( int t = 1; t < trajecs; t++ )
     {
         GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
-            ( d_grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid );
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 

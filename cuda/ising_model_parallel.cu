@@ -177,7 +177,7 @@ void determine_ij( int i, int j, int length, int *ij )
 
 // void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
-                    *float r1_grid, int index )
+                    float *r1_grid, int index )
 {
 
     // float x1 = x1r1[0];

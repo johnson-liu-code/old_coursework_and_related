@@ -582,6 +582,10 @@ int main( int argc, char *argv[] )
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
 
+        cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+
+        print_grid( h_grid, length, t );
+
         // print_grid( grid, length, t );
     }
 

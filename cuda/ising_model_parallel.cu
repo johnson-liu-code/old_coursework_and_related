@@ -179,6 +179,7 @@ void determine_ij( int i, int j, int length, int *ij )
     ij[3] = j_right;
 }
 
+__device__
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
                     float *r1_grid, int index )
 {
@@ -396,25 +397,25 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             y = exp( -beta * ( energy_new - energy_old ) );
-            // accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
+            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
-            x1 = d_x1_grid[ index_global ];
-
-            x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
-
-            if ( x1 < 0 )
-            {
-                x1 += m;
-            }
-
-            r1 = x1 / m;
+            // x1 = d_x1_grid[ index_global ];
+            //
+            // x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
+            //
+            // if ( x1 < 0 )
+            // {
+            //     x1 += m;
+            // }
+            //
+            // r1 = x1 / m;
 
             // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
-            d_x1_grid[ index_global ] = x1;
-            d_r1_grid[ index_global ] = r1;
+            // d_x1_grid[ index_global ] = x1;
+            // d_r1_grid[ index_global ] = r1;
 
-            // r1 = d_r1_grid[ index_global ];
+            r1 = d_r1_grid[ index_global ];
 
             if ( r1 <= y )
             {

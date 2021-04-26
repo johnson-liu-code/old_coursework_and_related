@@ -350,13 +350,13 @@ int main( int argc, char *argv[] )
     float r = fmod( m, a );
 
     initialize_x1_grid( a, q, r, m, x1_grid, length );
-    initialize_lattice( grid, length );
-    print_lattice( grid, length, 0 );
+    initialize_grid( grid, length );
+    print_grid( grid, length, 0 );
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        update_lattice( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
-        print_lattice( grid, length, t );
+        update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+        print_grid( grid, length, t );
     }
 
 

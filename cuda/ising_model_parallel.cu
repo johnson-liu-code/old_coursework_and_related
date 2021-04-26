@@ -239,6 +239,8 @@ void update_lattice( int *grid, int length, float J, float beta, float a, float 
                 // r1 = x1r1[1];
                 r1 = r1_grid[ index ];
 
+                std::cout << "y: " << y << ", r1: " << r1 << std::endl;
+
                 if ( r1 <= y )
                 {
                     change = true;

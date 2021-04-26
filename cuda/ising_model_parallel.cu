@@ -585,7 +585,7 @@ int main( int argc, char *argv[] )
 
     cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
 
-    print( h_grid, length, 0 );
+    print_grid( h_grid, length, 0 );
 
 
 

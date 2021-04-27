@@ -259,7 +259,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
     int x_up_local, x_down_local, x_up_global, x_down_global;
     int y_left_local, y_right_local, y_left_global, y_right_global;
 
-    float up_index_energy, down_index_energy, left_index_energy, right_index_energy;
+    float up_index_spin, down_index_spin, left_index_spin, right_index_spin;
 
     // float energy_old, energy_new, y, x1, r1;
     float energy_old, energy_new, y, r1;
@@ -294,8 +294,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             // The downward global memory does not need to be accessed.
             x_down_global = NULL;
 
-            up_index_energy   = (d_grid)[ length     * x_up_global  + y_global ];
-            down_index_energy = (shared)[ blockDim.y * x_down_local + y_local  ];
+            up_index_spin   = (d_grid)[ length     * x_up_global  + y_global ];
+            down_index_spin = (shared)[ blockDim.y * x_down_local + y_local  ];
 
         }
         // Else if the thread is in the last row of threads in the local grid ...
@@ -322,8 +322,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
                 x_down_global = x_global + 1;
             }
 
-            up_index_energy   = (shared)[ blockDim.y * x_up_local    + y_local  ];
-            down_index_energy = (d_grid)[ length     * x_down_global + y_global ];
+            up_index_spin   = (shared)[ blockDim.y * x_up_local    + y_local  ];
+            down_index_spin = (d_grid)[ length     * x_down_global + y_global ];
 
         }
         // Else if the thread is neither in the first row nor the last row of the
@@ -340,8 +340,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             // The global memory does not need to be accessed.
             x_down_global = NULL;
 
-            up_index_energy   = (shared)[ blockDim.y * x_up_local   + y_local ];
-            down_index_energy = (shared)[ blockDim.y * x_down_local + y_local ];
+            up_index_spin   = (shared)[ blockDim.y * x_up_local   + y_local ];
+            down_index_spin = (shared)[ blockDim.y * x_down_local + y_local ];
         }
 
         // If the thread is in the first column of threads in the local grid ...
@@ -368,8 +368,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             // The global memory does not need to be accessed.
             y_right_global = NULL;
 
-            left_index_energy  = (d_grid)[ length     * x_global + y_left_global ];
-            right_index_energy = (shared)[ blockDim.y * x_local  + y_right_local ];
+            left_index_spin  = (d_grid)[ length     * x_global + y_left_global ];
+            right_index_spin = (shared)[ blockDim.y * x_local  + y_right_local ];
         }
         // Else if the thread is in the last column of threads in the local grid ...
         else if ( threadIdx.y == ( blockDim.y - 1 ) )
@@ -395,8 +395,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
                 y_right_global = y_global + 1;
             }
 
-            left_index_energy  = (shared)[ blockDim.y * x_local  + y_left_local   ];
-            right_index_energy = (d_grid)[ length     * x_global + y_right_global ];
+            left_index_spin  = (shared)[ blockDim.y * x_local  + y_left_local   ];
+            right_index_spin = (d_grid)[ length     * x_global + y_right_global ];
 
         }
         // Else if the thread is neither in the first column nor the last column
@@ -413,12 +413,15 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             // The global memory does not need to be accessed.
             y_right_global = NULL;
 
-            left_index_energy  = (shared)[ blockDim.y * x_local + y_left_local  ];
-            right_index_energy = (shared)[ blockDim.y * x_local + y_right_local ];
+            left_index_spin  = (shared)[ blockDim.y * x_local + y_left_local  ];
+            right_index_spin = (shared)[ blockDim.y * x_local + y_right_local ];
         }
 
-        energy_old = -J * (shared)[ index_local ] * ( up_index_energy + down_index_energy
-            + left_index_energy + right_index_energy );
+        printf("up_spin: %d, down_spin: %d, left_spin: %d, right_spin: %d\n",
+                up_index_spin, down_index_spin, left_index_spin, right_index_spin );
+
+        energy_old = -J * (shared)[ index_local ] * ( up_index_spin + down_index_spin
+            + left_index_spin + right_index_spin );
 
         energy_new = - energy_old;
 
@@ -436,7 +439,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             r1 = d_r1_grid[ index_global ];
 
-            // printf( "r1: %f, y: %f", r1, y );
+            printf( "r1: %f, y: %f\n", r1, y );
 
             if ( r1 <= y )
             {

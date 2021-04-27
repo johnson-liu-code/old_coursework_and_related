@@ -140,7 +140,7 @@ void print_grid( int *grid, int length, int t )
 
 void print_other_grid( float *other_grid, int length, int t, std::string type )
 {
-    int i, j, index, other;
+    float i, j, index, other;
 
     int n_zero = 5;
     std::string num_string = std::to_string( t );

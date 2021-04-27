@@ -138,7 +138,7 @@ void print_grid( int *grid, int length, int t )
     outfile.close();
 }
 
-void print_other_grid( float *other_grid, int length, int t )
+void print_other_grid( float *other_grid, int length, int t, std::string type )
 {
     int i, j, index, other;
 
@@ -152,7 +152,7 @@ void print_other_grid( float *other_grid, int length, int t )
         num_string = "0" + num_string;
     }
 
-    std::string filename = "other_grid_t_" + num_string + ".out";
+    std::string filename = type + "_grid_t_" + num_string + ".out";
     std::ofstream outfile ( filename );
 
     for ( i = 0; i < length; i++)
@@ -213,7 +213,7 @@ void determine_ij( int i, int j, int length, int *ij )
 }
 
 __device__
-void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
+void accept_reject( float a, float q, float r, float m, float *x1_grid,
                     float *r1_grid, int index_global )
 {
     float x1 = x1_grid[ index_global ];
@@ -234,7 +234,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 __global__
 void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float a,
                                 float q, float r, float m, float *d_x1_grid,
-                                float *d_r1_grid )
+                                float *d_r1_grid, float *d_y_grid )
 {
     // Compute the global location of the active thread.
     int x_global = blockIdx.x * blockDim.x + threadIdx.x;
@@ -429,11 +429,14 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             y = exp( -beta * ( energy_new - energy_old ) );
-            accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
+
+            d_y_grid[ index_global ] = y;
+
+            accept_reject( a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
             r1 = d_r1_grid[ index_global ];
 
-            printf( "r1: %f, y: %f", r1, y );
+            // printf( "r1: %f, y: %f", r1, y );
 
             if ( r1 <= y )
             {
@@ -584,10 +587,10 @@ int main( int argc, char *argv[] )
     float *d_r1_grid;
     cudaMalloc( (void **)&d_r1_grid, sizeof(float) * size );
 
-    // float *h_y_grid;
-    // h_y_grid = (float *)malloc( sizeof(float) * size );
-    // float *d_y_grid;
-    // cudaMalloc( (void **)&d_y_grid, sizeof(float) * size );
+    float *h_y_grid;
+    h_y_grid = (float *)malloc( sizeof(float) * size );
+    float *d_y_grid;
+    cudaMalloc( (void **)&d_y_grid, sizeof(float) * size );
 
     initialize_x1_grid( a, q, r, m, h_x1_grid, length );
     initialize_grid( h_grid, length );
@@ -604,12 +607,12 @@ int main( int argc, char *argv[] )
 
     // cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
 
-    // print_other_grid( d2h_x1_grid, length, 1);
+    // print_other_grid( d2h_x1_grid, length, 1, "x1");
 
     for ( int t = 1; t < trajecs; t++ )
     {
         GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
-            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid );
+            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid, d_y_grid );
         cudaDeviceSynchronize();
 
         // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
@@ -620,12 +623,15 @@ int main( int argc, char *argv[] )
         // print_grid( grid, length, t );
 
         cudaMemcpy( h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_other_grid( h_r1_grid, length, t );
+        print_other_grid( h_r1_grid, length, t, "r1" );
+
+        cudaMemcpy( h_y_grid, d_y_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+
     }
 
     // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
     //
-    print_grid( h_grid, length, 999999 );
+    // print_grid( h_grid, length, 999999 );
 
 
 

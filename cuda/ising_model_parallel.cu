@@ -622,8 +622,8 @@ int main( int argc, char *argv[] )
 
         // print_grid( grid, length, t );
 
-        cudaMemcpy( d2h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_other_grid( d2h_r1_grid, length, t, "x1" );
+        cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        print_other_grid( d2h_x1_grid, length, t, "x1" );
 
         cudaMemcpy( h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         print_other_grid( h_r1_grid, length, t, "r1" );

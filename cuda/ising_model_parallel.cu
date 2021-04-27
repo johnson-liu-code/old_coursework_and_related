@@ -440,7 +440,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             r1 = d_r1_grid[ index_global ];
 
-            // printf( "r1: %f, y: %f\n", r1, y );
+            printf( "r1: %f, y: %f\n", r1, y );
 
             if ( r1 <= y )
             {

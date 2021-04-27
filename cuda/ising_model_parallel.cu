@@ -456,9 +456,6 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         {
             (d_grid)[ index_global ] = -(d_grid)[ index_global ];
         }
-
-
-
     }
 
 }
@@ -598,7 +595,7 @@ int main( int argc, char *argv[] )
 
     initialize_x1_grid( a, q, r, m, h_x1_grid, length );
     initialize_grid( h_grid, length );
-    // print_grid( h_grid, length, 0 );
+    print_grid( h_grid, length, 0 );
 
     cudaMemcpy( d_grid, h_grid, sizeof(int) * size, cudaMemcpyHostToDevice );
     cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );

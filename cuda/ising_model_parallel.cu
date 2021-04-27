@@ -227,7 +227,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
     float r1 = x1 / m;
 
-    // std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
+    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
 
     x1_grid[ index ] = x1;
     r1_grid[ index ] = r1;
@@ -435,8 +435,6 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             r1 = d_r1_grid[ index_global ];
 
-            // std::cout << "y: " << y << ", r1: " << r1 << std::endl;
-
             if ( r1 <= y )
             {
                 change = true;
@@ -627,7 +625,7 @@ int main( int argc, char *argv[] )
 
     // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
     //
-    print_grid( h_grid, length, 0 );
+    print_grid( h_grid, length, 999999 );
 
 
 

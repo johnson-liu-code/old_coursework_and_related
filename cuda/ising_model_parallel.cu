@@ -281,7 +281,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             if ( ( x_global - 1 ) < 0 )
             {
                 // Wrap around to the last row in the global grid.
-                x_up_global = x_global - 1;
+                x_up_global = length - 1;
             }
             // Otherwise ...
             else
@@ -303,7 +303,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else if ( threadIdx.x == ( blockDim.x - 1 ) )
         {
             // The upwards neighbor is in the row above in the local grid.
-            x_up_local = blockDim.x - 2;
+            x_up_local = x_local - 1;
             // The global memory does not need to be accessed.
             x_up_global = NULL;
 
@@ -332,12 +332,12 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             // The upwards neighbor is in the row above in the local grid.
-            x_up_local = threadIdx.x - 1;
+            x_up_local = x_local - 1;
             // The global memory does not need to be accessed.
             x_up_global = NULL;
 
             // The downwards neighbor is in the row below in the local grid.
-            x_down_local = threadIdx.x + 1;
+            x_down_local = x_local + 1;
             // The global memory does not need to be accessed.
             x_down_global = NULL;
 
@@ -376,7 +376,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else if ( threadIdx.y == ( blockDim.y - 1 ) )
         {
             // The leftwards neighbor is in the column to the left in the local grid.
-            y_left_local = blockDim.y - 2;
+            y_left_local = y_local - 1;
             // The global memory does not need to be accessed.
             y_left_global = NULL;
 
@@ -405,12 +405,12 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         else
         {
             // The leftwards neighbor is in the column to the left in the local grid.
-            y_left_local = threadIdx.y - 1;
+            y_left_local = y_local - 1;
             // The global memory does not need to be accessed.
             y_left_global = NULL;
 
             // The rightwards neighbor is in the column to the right in the local grid.
-            y_right_local = threadIdx.y + 1;
+            y_right_local = y_local + 1;
             // The global memory does not need to be accessed.
             y_right_global = NULL;
 

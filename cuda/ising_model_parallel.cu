@@ -418,8 +418,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             right_index_spin = (shared)[ blockDim.y * x_local + y_right_local ];
         }
 
-        printf("up_spin: %d, down_spin: %d, left_spin: %d, right_spin: %d\n",
-                up_index_spin, down_index_spin, left_index_spin, right_index_spin );
+        // printf("up_spin: %d, down_spin: %d, left_spin: %d, right_spin: %d\n",
+        //         up_index_spin, down_index_spin, left_index_spin, right_index_spin );
 
         energy_old = -J * (shared)[ index_local ] * ( up_index_spin + down_index_spin
             + left_index_spin + right_index_spin );
@@ -440,7 +440,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             r1 = d_r1_grid[ index_global ];
 
-            printf( "r1: %f, y: %f\n", r1, y );
+            // printf( "r1: %f, y: %f\n", r1, y );
 
             if ( r1 <= y )
             {

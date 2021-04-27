@@ -138,9 +138,9 @@ void print_grid( int *grid, int length, int t )
     outfile.close();
 }
 
-void print_other_grid( float *x1_grid, int length, int t )
+void print_other_grid( float *other_grid, int length, int t )
 {
-    int i, j, index, x1;
+    int i, j, index, other;
 
     int n_zero = 5;
     std::string num_string = std::to_string( t );
@@ -152,7 +152,7 @@ void print_other_grid( float *x1_grid, int length, int t )
         num_string = "0" + num_string;
     }
 
-    std::string filename = "x1_grid_t_" + num_string + ".out";
+    std::string filename = "other_grid_t_" + num_string + ".out";
     std::ofstream outfile ( filename );
 
     for ( i = 0; i < length; i++)
@@ -160,9 +160,9 @@ void print_other_grid( float *x1_grid, int length, int t )
         for ( j = 0; j < length; j++ )
         {
             index = ( length * i ) + j;
-            x1 = (x1_grid)[ index ];
+            other = (other_grid)[ index ];
 
-            outfile << x1 << ", ";
+            outfile << other << ", ";
         }
         // std::cout << std::endl;
         outfile << std::endl;
@@ -214,9 +214,9 @@ void determine_ij( int i, int j, int length, int *ij )
 
 __device__
 void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
-                    float *r1_grid, int index )
+                    float *r1_grid, int index_global )
 {
-    float x1 = x1_grid[ index ];
+    float x1 = x1_grid[ index_global ];
 
     x1 = a * fmod( x1, q ) - ( r * x1 ) / q;
 
@@ -227,10 +227,8 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1_grid,
 
     float r1 = x1 / m;
 
-    std::cout << "x1: " << x1 << ", r1: " << r1 << std::endl;
-
-    x1_grid[ index ] = x1;
-    r1_grid[ index ] = r1;
+    x1_grid[ index_global ] = x1;
+    r1_grid[ index_global ] = r1;
 }
 
 __global__
@@ -434,6 +432,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             accept_reject( y, a, q, r, m, d_x1_grid, d_r1_grid, index_global );
 
             r1 = d_r1_grid[ index_global ];
+
+            printf( "r1: %f, y: %f", r1, y );
 
             if ( r1 <= y )
             {

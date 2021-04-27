@@ -432,8 +432,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         }
         else
         {
-            printf( "energy_old: %f, energy_new: %f", energy_old, energy_new );
-            
+            printf( "energy_old: %f, energy_new: %f\n", energy_old, energy_new );
+
             y = exp( -beta * ( energy_new - energy_old ) );
 
             d_y_grid[ index_global ] = y;

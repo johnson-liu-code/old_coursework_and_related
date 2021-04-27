@@ -600,7 +600,7 @@ int main( int argc, char *argv[] )
     cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
     cudaMemcpy( d_r1_grid, h_r1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
 
-    print_other_grid( h_x1_grid, length, 0, "x1" );
+    // print_other_grid( h_x1_grid, length, 0, "x1" );
 
     // float *d2h_x1_grid;
     // d2h_x1_grid = (float *)malloc( sizeof(float) * size );
@@ -622,11 +622,14 @@ int main( int argc, char *argv[] )
 
         // print_grid( grid, length, t );
 
+        cudaMemcpy( d2h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        print_other_grid( d2h_r1_grid, length, t, "x1" );
+
         cudaMemcpy( h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         print_other_grid( h_r1_grid, length, t, "r1" );
 
         cudaMemcpy( h_y_grid, d_y_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-
+        print_other_grid( h_y_grid, length, t, "y" );
     }
 
     // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );

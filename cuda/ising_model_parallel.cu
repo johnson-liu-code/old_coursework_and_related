@@ -355,7 +355,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
             if ( ( y_global - 1 ) < 0 )
             {
                 // Wrap around to the last column in the global grid.
-                y_left_global = y_global - 1;
+                y_left_global = length - 1;
             }
             // Otherwise ...
             else

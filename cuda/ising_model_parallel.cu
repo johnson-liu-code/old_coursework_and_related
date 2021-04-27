@@ -600,7 +600,7 @@ int main( int argc, char *argv[] )
     cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
     cudaMemcpy( d_r1_grid, h_r1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
 
-    print_other_grid( h_x1_grid, length, 0 );
+    print_other_grid( h_x1_grid, length, 0, "x1" );
 
     // float *d2h_x1_grid;
     // d2h_x1_grid = (float *)malloc( sizeof(float) * size );

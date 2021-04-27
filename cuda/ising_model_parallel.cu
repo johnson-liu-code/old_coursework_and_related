@@ -259,7 +259,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
     int x_up_local, x_down_local, x_up_global, x_down_global;
     int y_left_local, y_right_local, y_left_global, y_right_global;
 
-    float up_index_spin, down_index_spin, left_index_spin, right_index_spin;
+    int up_index_spin, down_index_spin, left_index_spin, right_index_spin;
 
     // float energy_old, energy_new, y, x1, r1;
     float energy_old, energy_new, y, r1;

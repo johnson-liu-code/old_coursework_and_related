@@ -616,13 +616,18 @@ int main( int argc, char *argv[] )
     for ( int t = 1; t < trajecs; t++ )
     {
         GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
-            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid, d_y_grid );
+            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid, d_y_grid, 0 );
         cudaDeviceSynchronize();
 
-        // update_grid( grid, length, J, beta, a, q, r, m, x1_grid, r1_grid );
+        cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        print_grid( h_grid, length, t*2 );
+
+        GPUKernel_update_grid<<< dimGrid, dimBlock, sizeof(int) * blockwidth * blockwidth >>>
+            ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid, d_y_grid, 1 );
+        cudaDeviceSynchronize();
 
         cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_grid( h_grid, length, t );
+        print_grid( h_grid, length, t*2 + 1 );
 
         cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         print_other_grid( d2h_x1_grid, length, t, "x1" );

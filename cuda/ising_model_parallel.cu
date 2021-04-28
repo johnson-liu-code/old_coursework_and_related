@@ -235,7 +235,7 @@ void accept_reject( float a, float q, float r, float m, float *x1_grid,
 __global__
 void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float a,
                                 float q, float r, float m, float *d_x1_grid,
-                                float *d_r1_grid, float *d_y_grid )
+                                float *d_r1_grid, float *d_y_grid, int parity )
 {
     // Compute the global location of the active thread.
     int x_global = blockIdx.x * blockDim.x + threadIdx.x;
@@ -267,7 +267,8 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
     bool change = false;
 
     // If the thread is within the bounds of the grid ...
-    if ( ( x_global < length ) && ( y_global < length ) )
+    if ( ( x_global < length ) && ( y_global < length )
+        && ( ( ( x_global + y_global ) % 2 == parity ) ) )
     {
         // Compute local neighboring indices.
 

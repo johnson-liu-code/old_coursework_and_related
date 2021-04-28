@@ -433,7 +433,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
         }
         else
         {
-            printf( "energy_old: %f, energy_new: %f\n", energy_old, energy_new );
+            // printf( "energy_old: %f, energy_new: %f\n", energy_old, energy_new );
 
             y = exp( -beta * ( energy_new - energy_old ) );
 
@@ -443,7 +443,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
             r1 = d_r1_grid[ index_global ];
 
-            printf( "r1: %f, y: %f\n", r1, y );
+            // printf( "r1: %f, y: %f\n", r1, y );
 
             if ( r1 <= y )
             {
@@ -598,7 +598,7 @@ int main( int argc, char *argv[] )
 
     initialize_x1_grid( a, q, r, m, h_x1_grid, length );
     initialize_grid( h_grid, length );
-    print_grid( h_grid, length, 0 );
+    // print_grid( h_grid, length, 0 );
 
     cudaMemcpy( d_grid, h_grid, sizeof(int) * size, cudaMemcpyHostToDevice );
     cudaMemcpy( d_x1_grid, h_x1_grid, sizeof(float) * size, cudaMemcpyHostToDevice );
@@ -629,14 +629,14 @@ int main( int argc, char *argv[] )
         cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         print_grid( h_grid, length, t*2 + 1 );
 
-        cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_other_grid( d2h_x1_grid, length, t, "x1" );
-
-        cudaMemcpy( h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_other_grid( h_r1_grid, length, t, "r1" );
-
-        cudaMemcpy( h_y_grid, d_y_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
-        print_other_grid( h_y_grid, length, t, "y" );
+        // cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        // print_other_grid( d2h_x1_grid, length, t, "x1" );
+        //
+        // cudaMemcpy( h_r1_grid, d_r1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        // print_other_grid( h_r1_grid, length, t, "r1" );
+        //
+        // cudaMemcpy( h_y_grid, d_y_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        // print_other_grid( h_y_grid, length, t, "y" );
     }
 
     // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );

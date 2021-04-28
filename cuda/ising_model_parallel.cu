@@ -264,7 +264,7 @@ void GPUKernel_update_grid( int *d_grid, int length, float J, float beta, float 
 
     // float energy_old, energy_new, y, x1, r1;
     float energy_old, energy_new, y, r1;
-    bool change;
+    bool change = false;
 
     // If the thread is within the bounds of the grid ...
     if ( ( x_global < length ) && ( y_global < length ) )

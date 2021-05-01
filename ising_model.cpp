@@ -40,9 +40,11 @@ Output: ------------------------------------------------------------------------
 // Import libraries to use various functions.
 #include <time.h>                   // For measuring runtimes.
 #include <sys/time.h>               // For measuring runtimes.
-#include <stdlib.h>                 /* srand, rand */
-#include <stdio.h>                  // For interaction with console.
-#include <iostream>                 // For printing to screen (std::cout, std::endl).
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>                 // For printing to screen.
+#include <math.h>                   // For sqrt and atan2.
+#include <unistd.h>
 #include <fstream>
 // #include <cuda.h>                   // For CUDA parallelization on GPU.
 // =====================================================================================================

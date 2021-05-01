@@ -292,24 +292,24 @@ int main( int argc, char *argv[] )
     initialize_lattice( grid, length );
     // print_lattice( grid, length, 0 );
 
-    // struct timeval comp_start, comp_end;
-    // gettimeofday( &comp_start, NULL );
+    struct timeval comp_start, comp_end;
+    gettimeofday( &comp_start, NULL );
 
     for ( int t = 1; t < trajecs; t++ )
     {
         update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
-        print_lattice( grid, length, t );
+        // print_lattice( grid, length, t );
     }
 
-    // gettimeofday( &comp_end, NULL );
+    gettimeofday( &comp_end, NULL );
 
 
-    // float comp_time_microseconds = ( comp_end.tv_sec * 1000000 + comp_end.tv_usec )
-    //     - ( comp_start.tv_sec * 1000000 + comp_start.tv_usec );
-    // float comp_time_milliseconds = comp_time_microseconds / 1000.;
-    //
-    // printf( "%d, %f, %f, %d, ", length, J, beta, trajecs );
-    // printf( "%lf\n", comp_time_milliseconds );
+    float comp_time_microseconds = ( comp_end.tv_sec * 1000000 + comp_end.tv_usec )
+        - ( comp_start.tv_sec * 1000000 + comp_start.tv_usec );
+    float comp_time_milliseconds = comp_time_microseconds / 1000.;
+
+    printf( "%d, %f, %f, %d, ", length, J, beta, trajecs );
+    printf( "%lf\n", comp_time_milliseconds );
 
 
 

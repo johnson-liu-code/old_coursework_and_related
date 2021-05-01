@@ -613,9 +613,8 @@ int main( int argc, char *argv[] )
 
     // print_other_grid( d2h_x1_grid, length, 1, "x1");
 
-    // struct timeval comp_start, comp_end;
-
-    // gettimeofday( &comp_start, NULL );
+    struct timeval comp_start, comp_end;
+    gettimeofday( &comp_start, NULL );
 
     for ( int t = 1; t < trajecs; t++ )
     {
@@ -630,9 +629,9 @@ int main( int argc, char *argv[] )
             ( d_grid, length, J, beta, a, q, r, m, d_x1_grid, d_r1_grid, d_y_grid, 1 );
         // cudaDeviceSynchronize();
 
-        cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
+        // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         // print_grid( h_grid, length, t*2 + 1 );
-        print_grid( h_grid, length, t );
+        // print_grid( h_grid, length, t );
 
         // cudaMemcpy( d2h_x1_grid, d_x1_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
         // print_other_grid( d2h_x1_grid, length, t, "x1" );
@@ -644,22 +643,22 @@ int main( int argc, char *argv[] )
         // print_other_grid( h_y_grid, length, t, "y" );
     }
 
-    // cudaDeviceSynchronize();
+    cudaDeviceSynchronize();
 
 
     // cudaMemcpy( h_grid, d_grid, sizeof(int) * size, cudaMemcpyDeviceToHost );
     //
     // print_grid( h_grid, length, 999999 );
 
-    // gettimeofday( &comp_end, NULL );
+    gettimeofday( &comp_end, NULL );
 
 
-    // float comp_time_microseconds = ( comp_end.tv_sec * 1000000 + comp_end.tv_usec )
-    //     - ( comp_start.tv_sec * 1000000 + comp_start.tv_usec );
-    // float comp_time_milliseconds = comp_time_microseconds / 1000.;
-    //
-    // printf( "%d, %f, %f, %d, %d, ", length, J, beta, trajecs, blockwidth );
-    // printf( "%lf\n", comp_time_milliseconds );
+    float comp_time_microseconds = ( comp_end.tv_sec * 1000000 + comp_end.tv_usec )
+        - ( comp_start.tv_sec * 1000000 + comp_start.tv_usec );
+    float comp_time_milliseconds = comp_time_microseconds / 1000.;
+
+    printf( "%d, %f, %f, %d, %d, ", length, J, beta, trajecs, blockwidth );
+    printf( "%lf\n", comp_time_milliseconds );
 
 
 

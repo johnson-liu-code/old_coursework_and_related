@@ -187,7 +187,7 @@ void accept_reject( float y, float a, float q, float r, float m, float *x1r1 )
 
 }
 
-void update_lattice( int *grid, int length, float J, float beta, float x1,
+void update_lattice( int *grid, int length, float J, float beta,
                         float a, float q, float r, float m, int *ij, float *x1r1 )
 // void update_lattice( int *grid, int length, float J, float beta, int *ij )
 {
@@ -297,7 +297,7 @@ int main( int argc, char *argv[] )
 
     for ( int t = 1; t < trajecs; t++ )
     {
-        update_lattice( grid, length, J, beta, x1, a, q, r, m, ij, x1r1 );
+        update_lattice( grid, length, J, beta, a, q, r, m, ij, x1r1 );
         // print_lattice( grid, length, t );
     }
 

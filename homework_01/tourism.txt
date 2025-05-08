@@ -1,0 +1,18 @@
+ADD PROMOTION30 Denver San_Francisco Frontier_Airlines 350 3 130
+ADD PROMOTION31 Ontario San_Francisco SkyWest_Airlines 480 7 190
+ADD PROMOTION32 Las_Vegas Monterey SkyWest_Airlines 380 9 130
+ADD PROMOTION33 San_Francisco Redding SkyWest_Airlines 560 5 210
+PRINT
+CHANGE PROMOTION31 Seattle San_Francisco SkyWest_Airlines 480 7 190
+ADD PROMOTION34 Seattle San_Francisco United_Airlines 430 4 178
+ADD PROMOTION35 Seattle Salt_Lake_City SkyWest_Airlines 240 6 163
+ADD PROMOTION36 Seattle Manila Philippine_Airlines 840 5 150
+ADD PROMOTION37 Indianapolis San_Francisco Virgin_America 390 3 153
+PRINT
+PRINT_FROM Seattle
+ADD PROMOTION38 London San_Francisco British_Airways 830 7 420
+PRINT_TO San_Francisco
+DELETE PROMOTION37
+PRINT
+PRINT_ON_BUDGET 1600
+QUIT

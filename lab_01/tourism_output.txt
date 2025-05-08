@@ -1,0 +1,18 @@
+PROMOTION30 from Denver to San_Francisco, Airline: Frontier_Airlines, $350, Nights: 3, Price per night: $130
+PROMOTION31 from Ontario to San_Francisco, Airline: SkyWest_Airlines, $480, Nights: 7, Price per night: $190
+PROMOTION32 from Las_Vegas to Monterey, Airline: SkyWest_Airlines, $380, Nights: 9, Price per night: $130
+PROMOTION33 from San_Francisco to Redding, Airline: SkyWest_Airlines, $560, Nights: 5, Price per night: $210
+PRINT
+PROMOTION31 from Seattle to San_Francisco, Airline: SkyWest_Airlines, $480, Nights: 7, Price per night: $190
+PROMOTION34 from Seattle to San_Francisco, Airline: United_Airlines, $430, Nights: 4, Price per night: $178
+PROMOTION35 from Seattle to Salt_Lake_City, Airline: SkyWest_Airlines, $240, Nights: 6, Price per night: $163
+PROMOTION36 from Seattle to Manila, Airline: Philippine_Airlines, $840, Nights: 5, Price per night: $150
+PROMOTION37 from Indianapolis to San_Francisco, Airline: Virgin_America, $390, Nights: 3, Price per night: $153
+PRINT
+PRINT_FROM Seattle
+PROMOTION38 from London to San_Francisco, Airline: British_Airways, $830, Nights: 7, Price per night: $420
+PRINT_TO San_Francisco
+DELETE PROMOTION37
+PRINT
+PRINT_ON_BUDGET 1600
+QUIT

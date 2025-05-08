@@ -1,0 +1,25 @@
+Adding player with rank 10
+Adding player with rank 20
+Adding player with rank 5
+Adding player with rank 30
+Adding player with rank 25
+Adding player with rank 35
+Adding player with rank 15
+Adding player with rank 60
+Adding player with rank 65
+Adding player with rank 45
+Adding player with rank 55
+Adding player with rank 50
+Adding player with rank 40
+Adding player with rank 100
+Adding player with rank 85
+Adding player with rank 80
+Adding player with rank 70
+Adding player with rank 75
+Adding player with rank 110
+Adding player with rank 105
+Printing players with ranks higher than 50
+Printing players with ranks lower than 50
+Finding players with rank 50
+Removing players with rank 105
+Quitting
